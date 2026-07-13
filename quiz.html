@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>کوییز تعاملی ریاضی ششم - الگوهای عددی</title>
+    
+    <!-- راهنمای حالت آفلاین کامل: -->
+    <!-- برای اجرای کاملاً آفلاین بدون اینترنت، اسکریپت‌های زیر را دانلود کرده و جایگزین لینک‌های آنلاین کنید: -->
+    <!-- 1. https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js -> react.min.js -->
+    <!-- 2. https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js -> react-dom.min.js -->
+    <!-- 3. https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.21.4/babel.min.js -> babel.min.js -->
+    <!-- 4. https://cdn.tailwindcss.com -> tailwind.js -->
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        body {
+            /* استفاده از فونت‌های استاندارد سیستمی فارسی برای عدم وابستگی به وب‌فونت گوگل */
+            font-family: 'Vazirmatn', 'Tahoma', 'Segoe UI', sans-serif;
+            background-color: #f0f7f4;
+            background-image: radial-gradient(#d1e7dd 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #e6f2ec;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #a3cfbb;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #75b798;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-4px); }
+            75% { transform: translateX(4px); }
+        }
+        .animate-shake {
+            animation: shake 0.3s ease-in-out;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4 overflow-x-hidden">
+
+    <div id="root" class="w-full max-w-5xl"></div>
+
+    <!-- بارگذاری فریم‌ورک‌ها از CDN (در صورت ذخیره فایل‌ها در سیستم، آدرس محلی آن‌ها را جایگزین کنید) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.21.4/babel.min.js"></script>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // کامپوننت‌های آیکون SVG داخلی جهت حذف وابستگی به FontAwesome در حالت آفلاین
+        const Icons = {
+            Chalkboard: () => <svg class="w-5 h-5 text-yellow-300 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>,
+            Home: () => <svg class="w-5 h-5 text-amber-200 hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>,
+            Graduation: () => <svg class="w-16 h-16 text-yellow-300 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222" /></svg>,
+            Play: () => <svg class="w-4 h-4 inline" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>,
+            CheckDouble: () => <svg class="w-4 h-4 text-emerald-600 inline ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>,
+            Sparkles: () => <svg class="w-4 h-4 text-emerald-600 inline ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4M4 19h4m12-7v4M18 14h4m-7-14l3 3L11 9l-3-3 7-7z" /></svg>,
+            Question: () => <svg class="w-4 h-4 text-indigo-600 inline ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
+            Lightbulb: () => <svg class="w-4 h-4 text-yellow-500 mt-0.5 inline ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>,
+            CheckCircle: () => <svg class="w-5 h-5 text-emerald-500 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
+            XCircle: () => <svg class="w-5 h-5 text-rose-500 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
+            ThumbsUp: () => <svg class="w-8 h-8 text-white mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.757c1.27 0 2.112 1.195 1.658 2.377l-1.92 5a2 2 0 01-1.85 1.25H11H8V10h2l3.447-5.172a1 1 0 011.609 1.144L14 10zM4 10H2v10h2V10z" /></svg>,
+            RotateLeft: () => <svg class="w-6 h-6 text-white mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 4.21L19 6.5" /></svg>,
+            ArrowLeft: () => <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>,
+            ArrowRight: () => <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l7-7m-7 7H3" /></svg>,
+            ArrowRightIcon: () => <svg class="w-3 h-3 text-indigo-300 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>,
+            ChevronRight: () => <svg class="w-3 h-3 text-emerald-400 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>,
+            Star: ({ filled }) => <svg class={`w-8 h-8 inline ${filled ? 'text-yellow-400' : 'text-slate-600 opacity-40'}`} fill={filled ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.381-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" /></svg>
+        };
+
+        const playSynthSound = (type) => {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                if (type === 'correct') {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(330, ctx.currentTime); 
+                    osc.frequency.exponentialRampToValueAtTime(660, ctx.currentTime + 0.3); 
+                    gain.gain.setValueAtTime(0.15, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start();
+                    osc.stop(ctx.currentTime + 0.4);
+                } else if (type === 'wrong') {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(180, ctx.currentTime);
+                    osc.frequency.linearRampToValueAtTime(90, ctx.currentTime + 0.4);
+                    gain.gain.setValueAtTime(0.15, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.45);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start();
+                    osc.stop(ctx.currentTime + 0.45);
+                } else if (type === 'click') {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(450, ctx.currentTime);
+                    gain.gain.setValueAtTime(0.1, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start();
+                    osc.stop(ctx.currentTime + 0.15);
+                }
+            } catch (e) {
+                console.log("Audio logic bypassed.");
+            }
+        };
+
+        const toPersian = (num) => {
+            if (num === undefined || num === null) return '';
+            return String(num).replace(/[0-9]/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[d]);
+        };
+
+        const quizData = [
+            {
+                id: 1,
+                category: "اعداد زوج و فرد",
+                categoryColor: "from-blue-400 to-indigo-500",
+                question: "حاصل‌جمع دو عدد فرد، همواره چه نوع عددی است؟",
+                options: [
+                    { key: "الف", text: "یک عدد فرد", isCorrect: false },
+                    { key: "ب", text: "یک عدد زوج", isCorrect: true },
+                    { key: "ج", text: "عدد صفر", isCorrect: false },
+                    { key: "د", text: "گاهی زوج، گاهی فرد", isCorrect: false }
+                ],
+                hint: "یک نمونه ساده در ذهن خودت مثال بزن؛ مثل جمع دو عدد فرد کوچک.",
+                illustration: (
+                    <div class="flex flex-col items-center p-3 bg-blue-50 rounded-xl border-2 border-dashed border-blue-200">
+                        <div class="flex items-center justify-center gap-6" dir="ltr">
+                            <div class="flex flex-col items-center">
+                                <span class="text-xs text-blue-600 font-bold mb-1">فرد (۳)</span>
+                                <div class="grid grid-cols-2 gap-1 bg-white p-1.5 rounded-lg shadow-sm">
+                                    <span class="w-4 h-4 bg-amber-400 rounded-full inline-block shadow-sm"></span>
+                                    <span class="w-4 h-4 bg-amber-400 rounded-full inline-block shadow-sm"></span>
+                                    <span class="w-4 h-4 bg-amber-400 rounded-full inline-block shadow-sm col-span-2 mx-auto border border-red-400"></span>
+                                </div>
+                            </div>
+                            <span class="text-2xl text-indigo-500 font-extrabold">+</span>
+                            <div class="flex flex-col items-center">
+                                <span class="text-xs text-blue-600 font-bold mb-1">فرد (۵)</span>
+                                <div class="grid grid-cols-2 gap-1 bg-white p-1.5 rounded-lg shadow-sm">
+                                    <span class="w-4 h-4 bg-emerald-400 rounded-full inline-block shadow-sm"></span>
+                                    <span class="w-4 h-4 bg-emerald-400 rounded-full inline-block shadow-sm"></span>
+                                    <span class="w-4 h-4 bg-emerald-400 rounded-full inline-block shadow-sm"></span>
+                                    <span class="w-4 h-4 bg-emerald-400 rounded-full inline-block shadow-sm"></span>
+                                    <span class="w-4 h-4 bg-emerald-400 rounded-full inline-block shadow-sm col-span-2 mx-auto border border-red-400"></span>
+                                </div>
+                            </div>
+                            <span class="text-2xl text-indigo-500 font-extrabold">=</span>
+                            <div class="bg-indigo-100 px-3 py-2 rounded-lg border border-indigo-200 text-center">
+                                <span class="text-xs text-indigo-700 block font-bold">مجموع</span>
+                                <span class="text-sm font-black text-indigo-800">جفت و متقارن</span>
+                            </div>
+                        </div>
+                    </div>
+                )
+            },
+            {
+                id: 2,
+                category: "اعداد زوج و فرد",
+                categoryColor: "from-blue-400 to-indigo-500",
+                question: "دهمین عدد زوج طبیعی کدام است؟",
+                options: [
+                    { key: "الف", text: "۱۰", isCorrect: false },
+                    { key: "ب", text: "۱۲", isCorrect: false },
+                    { key: "ج", text: "۱۸", isCorrect: false },
+                    { key: "د", text: "۲۰", isCorrect: true }
+                ],
+                hint: "رابطه بین شماره هر عدد زوج و خود آن عدد را بررسی کن.",
+                illustration: (
+                    <div class="flex flex-col items-center p-3 bg-indigo-50 rounded-xl border border-indigo-100">
+                        <div class="flex justify-center items-center gap-2 mb-2" dir="ltr">
+                            <span class="px-2 py-1 bg-white border border-indigo-200 text-indigo-700 rounded-md font-bold text-xs">2</span>
+                            <Icons.ArrowRightIcon />
+                            <span class="px-2 py-1 bg-white border border-indigo-200 text-indigo-700 rounded-md font-bold text-xs">4</span>
+                            <Icons.ArrowRightIcon />
+                            <span class="px-2 py-1 bg-white border border-indigo-200 text-indigo-700 rounded-md font-bold text-xs">6</span>
+                            <Icons.ArrowRightIcon />
+                            <span class="px-2 py-1 bg-gray-100 border border-dashed border-gray-300 text-gray-400 rounded-md text-xs">...</span>
+                            <Icons.ArrowRightIcon />
+                            <span class="px-2 py-1 bg-indigo-600 text-white rounded-md font-bold text-xs">?</span>
+                        </div>
+                        <span class="text-[10px] text-indigo-600 font-medium">الگو: حاصل‌ضرب شماره شکل در عدد ۲</span>
+                    </div>
+                )
+            },
+            {
+                id: 3,
+                category: "مسائل صف",
+                categoryColor: "from-purple-400 to-pink-500",
+                question: "امین در یک صف، از ابتدا نفر هفتم و از انتها نفر نهم است. در این صف چند نفر ایستاده‌اند؟",
+                options: [
+                    { key: "الف", text: "۱۵ نفر", isCorrect: true },
+                    { key: "ب", text: "۱۶ نفر", isCorrect: false },
+                    { key: "ج", text: "۱۴ نفر", isCorrect: false },
+                    { key: "د", text: "۱۷ نفر", isCorrect: false }
+                ],
+                hint: "مواظب باش امین را در شمارش ابتدا و انتها، دو بار حساب نکنی.",
+                illustration: (
+                    <div class="flex flex-col items-center bg-purple-50 p-3 rounded-xl border border-purple-100">
+                        <div class="flex items-center gap-1" dir="ltr">
+                            <span class="text-[10px] font-bold text-purple-700 bg-purple-100 px-1.5 py-0.5 rounded">ابتدا</span>
+                            <span class="w-2.5 h-2.5 bg-purple-300 rounded-full"></span>
+                            <span class="w-2.5 h-2.5 bg-purple-300 rounded-full"></span>
+                            <span class="w-2.5 h-2.5 bg-purple-300 rounded-full"></span>
+                            <span class="w-2.5 h-2.5 bg-purple-300 rounded-full"></span>
+                            <span class="w-2.5 h-2.5 bg-purple-300 rounded-full"></span>
+                            <span class="w-2.5 h-2.5 bg-purple-300 rounded-full"></span>
+                            <div class="flex flex-col items-center mx-1 relative">
+                                <span class="text-[9px] absolute -top-4 text-pink-600 font-bold bg-pink-100 px-1 rounded">امین</span>
+                                <span class="w-4.5 h-4.5 bg-pink-500 rounded-full border-2 border-white ring-2 ring-pink-300 shadow"></span>
+                            </div>
+                            <span class="w-2.5 h-2.5 bg-purple-300 rounded-full"></span>
+                            <span class="w-2.5 h-2.5 bg-purple-300 rounded-full"></span>
+                            <span class="w-2.5 h-2.5 bg-purple-300 rounded-full"></span>
+                            <span class="w-2.5 h-2.5 bg-purple-300 rounded-full"></span>
+                            <span class="w-2.5 h-2.5 bg-purple-300 rounded-full"></span>
+                            <span class="w-2.5 h-2.5 bg-purple-300 rounded-full"></span>
+                            <span class="w-2.5 h-2.5 bg-purple-300 rounded-full"></span>
+                            <span class="w-2.5 h-2.5 bg-purple-300 rounded-full"></span>
+                            <span class="text-[10px] font-bold text-purple-700 bg-purple-100 px-1.5 py-0.5 rounded">انتها</span>
+                        </div>
+                        <span class="text-[10px] text-purple-600 font-semibold mt-2.5">فرمول کمکی: (مکان ابتدا + مکان انتها) منهای یک نفر</span>
+                    </div>
+                )
+            },
+            {
+                id: 4,
+                category: "مسائل صف",
+                categoryColor: "from-purple-400 to-pink-500",
+                question: "رضا در یک صف ایستاده است. ۶ نفر جلوی او و ۱۰ نفر پشت سر او هستند. تعداد کل افراد صف چند نفر است؟",
+                options: [
+                    { key: "الف", text: "۱۶ نفر", isCorrect: false },
+                    { key: "ب", text: "۱۷ نفر", isCorrect: true },
+                    { key: "ج", text: "۱۵ نفر", isCorrect: false },
+                    { key: "د", text: "۱۸ نفر", isCorrect: false }
+                ],
+                hint: "تعداد افراد جلو، افراد عقب و خود رضا را با هم جمع کن.",
+                illustration: (
+                    <div class="flex justify-center items-center gap-3 bg-pink-50 p-3 rounded-xl border border-pink-100" dir="ltr">
+                        <div class="text-center px-2 py-0.5 bg-pink-200/50 rounded-lg">
+                            <span class="text-[10px] block text-pink-700 font-medium">جلوترها</span>
+                            <span class="text-xs font-bold text-pink-800">۶ نفر</span>
+                        </div>
+                        <span class="text-lg text-pink-400 font-bold">+</span>
+                        <div class="flex flex-col items-center">
+                            <span class="w-7 h-7 bg-pink-600 text-white rounded-full flex items-center justify-center font-bold text-xs shadow ring-2 ring-pink-300">رضا</span>
+                        </div>
+                        <span class="text-lg text-pink-400 font-bold">+</span>
+                        <div class="text-center px-2 py-0.5 bg-pink-200/50 rounded-lg">
+                            <span class="text-[10px] block text-pink-700 font-medium">پشت‌سرها</span>
+                            <span class="text-xs font-bold text-pink-800">۱۰ نفر</span>
+                        </div>
+                    </div>
+                )
+            },
+            {
+                id: 5,
+                category: "مضرب‌ها",
+                categoryColor: "from-amber-400 to-orange-500",
+                question: "هشتمین مضرب عدد ۶ کدام است؟",
+                options: [
+                    { key: "الف", text: "۳۶", isCorrect: false },
+                    { key: "ب", text: "۴۲", isCorrect: false },
+                    { key: "ج", text: "۴۸", isCorrect: true },
+                    { key: "د", text: "۵۴", isCorrect: false }
+                ],
+                hint: "مضرب یعنی حاصل‌ضرب آن عدد در عددهای طبیعی متوالی.",
+                illustration: (
+                    <div class="flex flex-col items-center p-3 bg-amber-50 rounded-xl border border-amber-100">
+                        <div class="flex items-center justify-center gap-1 flex-wrap" dir="ltr">
+                            <span class="px-1.5 py-0.5 bg-white border border-amber-200 text-amber-800 rounded text-[10px]">6</span>
+                            <Icons.ArrowRightIcon />
+                            <span class="px-1.5 py-0.5 bg-white border border-amber-200 text-amber-800 rounded text-[10px]">12</span>
+                            <Icons.ArrowRightIcon />
+                            <span class="px-1.5 py-0.5 bg-white border border-amber-200 text-amber-800 rounded text-[10px]">18</span>
+                            <Icons.ArrowRightIcon />
+                            <span class="px-1.5 py-0.5 bg-white border border-dashed border-gray-300 text-gray-400 rounded text-[10px]">...</span>
+                            <Icons.ArrowRightIcon />
+                            <span class="px-2 py-0.5 bg-amber-600 text-white rounded font-bold text-[10px] shadow">?</span>
+                        </div>
+                        <span class="text-[10px] text-amber-700 font-semibold mt-2.5">راهنما: عدد ۶ را در شماره مضرب درخواستی ضرب کن.</span>
+                    </div>
+                )
+            },
+            {
+                id: 6,
+                category: "مضرب‌ها",
+                categoryColor: "from-amber-400 to-orange-500",
+                question: "کدام‌یک از اعداد زیر، هم مضرب عدد ۳ و هم مضرب عدد ۵ است؟",
+                options: [
+                    { key: "الف", text: "۱۲", isCorrect: false },
+                    { key: "ب", text: "۱۵", isCorrect: true },
+                    { key: "ج", text: "۲۰", isCorrect: false },
+                    { key: "د", text: "۲۵", isCorrect: false }
+                ],
+                hint: "عددی را پیدا کن که هم در جدول ضرب ۳ و هم در ۵ وجود دارد.",
+                illustration: (
+                    <div class="flex items-center justify-center gap-4 p-3 bg-amber-50/60 rounded-xl border border-amber-100">
+                        <div class="flex items-center justify-center gap-2" dir="ltr">
+                            <div class="w-16 h-16 rounded-full border border-orange-400 bg-orange-100/40 flex flex-col items-center justify-center text-center">
+                                <span class="text-[9px] text-orange-600 block">مضرب ۳</span>
+                                <span class="text-xs font-bold text-orange-800">3, 6, 9...</span>
+                            </div>
+                            <div class="w-16 h-16 rounded-full border-2 border-emerald-500 bg-emerald-100/50 flex flex-col items-center justify-center text-center animate-pulse">
+                                <span class="text-[9px] text-emerald-700 block">مشترک</span>
+                                <span class="text-sm font-black text-emerald-800">?</span>
+                            </div>
+                            <div class="w-16 h-16 rounded-full border border-amber-400 bg-amber-100/40 flex flex-col items-center justify-center text-center">
+                                <span class="text-[9px] text-amber-600 block">مضرب ۵</span>
+                                <span class="text-xs font-bold text-amber-800">5, 10, 20...</span>
+                            </div>
+                        </div>
+                    </div>
+                )
+            },
+            {
+                id: 7,
+                category: "الگوهای عددی (خطی)",
+                categoryColor: "from-emerald-400 to-teal-500",
+                question: "در الگوی عددی مقابل، عدد بعدی کدام است؟",
+                options: [
+                    { key: "الف", text: "۱۹", isCorrect: false },
+                    { key: "ب", text: "۲۰", isCorrect: false },
+                    { key: "ج", text: "۲۱", isCorrect: true },
+                    { key: "د", text: "۲۲", isCorrect: false }
+                ],
+                hint: "فاصله بین هر دو عدد پشت سر هم چقدر است؟",
+                illustration: (
+                    <div class="flex flex-col items-center p-3 bg-emerald-50 rounded-xl border border-emerald-100">
+                        <div class="flex items-center gap-2" dir="ltr">
+                            <span class="text-base font-extrabold text-emerald-800">5</span>
+                            <Icons.ChevronRight />
+                            <span class="text-base font-extrabold text-emerald-800">9</span>
+                            <Icons.ChevronRight />
+                            <span class="text-base font-extrabold text-emerald-800">13</span>
+                            <Icons.ChevronRight />
+                            <span class="text-base font-extrabold text-emerald-800">17</span>
+                            <Icons.ChevronRight />
+                            <span class="px-2 py-0.5 bg-emerald-600 text-white rounded font-bold text-base shadow">?</span>
+                        </div>
+                        <span class="text-[10px] text-emerald-600 font-semibold mt-2 bg-white px-2 py-0.5 rounded border border-emerald-100">الگو با مقداری ثابت افزایش می‌یابد.</span>
+                    </div>
+                )
+            },
+            {
+                id: 8,
+                category: "الگوهای عددی (مربعی)",
+                categoryColor: "from-emerald-400 to-teal-500",
+                question: "هفتمین عدد در الگوی اعداد مربعی زیر کدام است؟",
+                options: [
+                    { key: "الف", text: "۳۶", isCorrect: false },
+                    { key: "ب", text: "۴۹", isCorrect: true },
+                    { key: "ج", text: "۲۵", isCorrect: false },
+                    { key: "د", text: "۶۴", isCorrect: false }
+                ],
+                hint: "به ضرب هر شماره شکل در خودش فکر کن.",
+                illustration: (
+                    <div class="flex flex-col items-center p-3 bg-teal-50 rounded-xl border border-teal-100">
+                        <div class="flex items-center justify-center gap-3 mb-2" dir="ltr">
+                            <span class="text-sm font-bold text-teal-800">1</span>
+                            <Icons.ArrowRightIcon />
+                            <span class="text-sm font-bold text-teal-800">4</span>
+                            <Icons.ArrowRightIcon />
+                            <span class="text-sm font-bold text-teal-800">9</span>
+                            <Icons.ArrowRightIcon />
+                            <span class="text-sm font-bold text-teal-800">16</span>
+                            <Icons.ArrowRightIcon />
+                            <span class="text-sm font-bold text-gray-400">...</span>
+                            <Icons.ArrowRightIcon />
+                            <span class="px-2 py-0.5 bg-teal-600 text-white rounded font-bold text-xs shadow">شکل ۷</span>
+                        </div>
+                        <span class="text-[10px] text-teal-600">رابطه: (شماره شکل × شماره شکل)</span>
+                    </div>
+                )
+            },
+            {
+                id: 9,
+                category: "الگوهای عددی (مثلثی)",
+                categoryColor: "from-emerald-400 to-teal-500",
+                question: "ششمین عدد در الگوی اعداد مثلثی زیر کدام است؟",
+                options: [
+                    { key: "الف", text: "۱۵", isCorrect: false },
+                    { key: "ب", text: "۲۱", isCorrect: true },
+                    { key: "ج", text: "۱۸", isCorrect: false },
+                    { key: "د", text: "۲۸", isCorrect: false }
+                ],
+                hint: "رابطه الگوی مثلثی: حاصل‌ضرب شماره شکل در شکل بعدی، تقسیم بر ۲.",
+                illustration: (
+                    <div class="flex flex-col items-center p-3 bg-emerald-50 rounded-xl border border-emerald-100">
+                        <div class="flex items-center justify-center gap-2 mb-2" dir="ltr">
+                            <span class="text-sm font-bold text-emerald-800">1</span>
+                            <Icons.ChevronRight />
+                            <span class="text-sm font-bold text-emerald-800">3</span>
+                            <Icons.ChevronRight />
+                            <span class="text-sm font-bold text-emerald-800">6</span>
+                            <Icons.ChevronRight />
+                            <span class="text-sm font-bold text-emerald-800">10</span>
+                            <Icons.ChevronRight />
+                            <span class="text-sm font-bold text-gray-400">...</span>
+                            <Icons.ChevronRight />
+                            <span class="px-2 py-0.5 bg-emerald-600 text-white rounded font-bold text-xs shadow">شکل ۶</span>
+                        </div>
+                        <span class="text-[10px] text-emerald-600">فرمول: ۲ / [(شماره شکل + ۱) × شماره شکل]</span>
+                    </div>
+                )
+            },
+            {
+                id: 10,
+                category: "الگوهای عددی (مستطیلی)",
+                categoryColor: "from-emerald-400 to-teal-500",
+                question: "پنجمین عدد در الگوی اعداد مستطیلی زیر کدام است؟",
+                options: [
+                    { key: "الف", text: "۲۵", isCorrect: false },
+                    { key: "ب", text: "۲۸", isCorrect: false },
+                    { key: "ج", text: "۳۰", isCorrect: true },
+                    { key: "د", text: "۳۶", isCorrect: false }
+                ],
+                hint: "رابطه الگوی مستطیلی: ضرب هر شماره شکل در عدد بعدی‌اش.",
+                illustration: (
+                    <div class="flex flex-col items-center p-3 bg-teal-50 rounded-xl border border-teal-100">
+                        <div class="flex items-center justify-center gap-2 mb-2" dir="ltr">
+                            <span class="text-sm font-bold text-teal-800">2</span>
+                            <Icons.ArrowRightIcon />
+                            <span class="text-sm font-bold text-teal-800">6</span>
+                            <Icons.ArrowRightIcon />
+                            <span class="text-sm font-bold text-teal-800">12</span>
+                            <Icons.ArrowRightIcon />
+                            <span class="text-sm font-bold text-teal-800">20</span>
+                            <Icons.ArrowRightIcon />
+                            <span class="text-sm font-bold text-gray-400">...</span>
+                            <Icons.ArrowRightIcon />
+                            <span class="px-2 py-0.5 bg-teal-600 text-white rounded font-bold text-xs shadow">شکل ۵</span>
+                        </div>
+                        <span class="text-[10px] text-teal-600">فرمول: شماره شکل × (شماره شکل + ۱)</span>
+                    </div>
+                )
+            }
+        ];
+
+        function App() {
+            const [gameState, setGameState] = useState('intro'); 
+            const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+            const [selectedOption, setSelectedOption] = useState(null);
+            const [score, setScore] = useState(0);
+            const [showHint, setShowHint] = useState(false);
+            const [answersStatus, setAnswersStatus] = useState(Array(10).fill(null));
+
+            const currentQuestion = quizData[currentQuestionIndex];
+
+            const handleStartQuiz = () => {
+                playSynthSound('click');
+                setGameState('quiz');
+                setCurrentQuestionIndex(0);
+                setScore(0);
+                setSelectedOption(null);
+                setShowHint(false);
+                setAnswersStatus(Array(10).fill(null));
+            };
+
+            const handleOptionClick = (option) => {
+                playSynthSound('click');
+                setSelectedOption(option);
+                
+                setTimeout(() => {
+                    if (option.isCorrect) {
+                        playSynthSound('correct');
+                        setGameState('feedback-correct');
+                        if (answersStatus[currentQuestionIndex] === null) {
+                            setScore(prev => prev + 1);
+                            const updated = [...answersStatus];
+                            updated[currentQuestionIndex] = true;
+                            setAnswersStatus(updated);
+                        }
+                    } else {
+                        playSynthSound('wrong');
+                        setGameState('feedback-wrong');
+                        if (answersStatus[currentQuestionIndex] === null) {
+                            const updated = [...answersStatus];
+                            updated[currentQuestionIndex] = false;
+                            setAnswersStatus(updated);
+                        }
+                    }
+                }, 300);
+            };
+
+            const handleNextQuestion = () => {
+                playSynthSound('click');
+                setSelectedOption(null);
+                setShowHint(false);
+                if (currentQuestionIndex < quizData.length - 1) {
+                    setCurrentQuestionIndex(prev => prev + 1);
+                    setGameState('quiz');
+                } else {
+                    setGameState('score');
+                }
+            };
+
+            const handleTryAgain = () => {
+                playSynthSound('click');
+                setSelectedOption(null);
+                setGameState('quiz');
+            };
+
+            const handlePreviousQuestion = () => {
+                if (currentQuestionIndex > 0) {
+                    playSynthSound('click');
+                    setSelectedOption(null);
+                    setShowHint(false);
+                    setCurrentQuestionIndex(prev => prev - 1);
+                    setGameState('quiz');
+                }
+            };
+
+            const handleGoHome = () => {
+                playSynthSound('click');
+                setGameState('intro');
+            };
+
+            const getStars = () => {
+                if (score >= 9) return 3;
+                if (score >= 6) return 2;
+                return 1;
+            };
+
+            return (
+                <div class="bg-white rounded-3xl border-8 border-yellow-700/80 shadow-2xl overflow-hidden relative" style={{ aspectRatio: "16/9", minHeight: "510px" }}>
+                    
+                    {/* Classroom Top Header */}
+                    <div class="bg-amber-800 text-amber-100 px-6 py-3 flex items-center justify-between border-b-4 border-amber-900 shadow">
+                        <div class="flex items-center gap-2 font-bold text-sm lg:text-base">
+                            <Icons.Chalkboard />
+                            <span class="mr-2">ریاضی ششم ابتدایی - فصل اول: الگوهای عددی</span>
+                        </div>
+                        {gameState !== 'intro' && gameState !== 'score' && (
+                            <div class="flex items-center gap-4 text-xs lg:text-sm">
+                                <span class="bg-amber-900/60 px-3 py-1 rounded-full text-yellow-300 font-bold">
+                                    امتیاز: {toPersian(score)} از {toPersian(quizData.length)}
+                                </span>
+                                <span class="bg-amber-950 px-3 py-1 rounded-md font-medium text-amber-200">
+                                    سوال {toPersian(currentQuestionIndex + 1)} از {toPersian(quizData.length)}
+                                </span>
+                            </div>
+                        )}
+                        <button onClick={handleGoHome} class="text-amber-200 hover:text-white transition duration-200 focus:outline-none">
+                            <Icons.Home />
+                        </button>
+                    </div>
+
+                    <div class="p-5 md:p-6 flex flex-col justify-between h-[calc(100%-60px)] relative bg-slate-50">
+
+                        {/* Intro Slide */}
+                        {gameState === 'intro' && (
+                            <div class="flex flex-col items-center justify-center text-center my-auto py-2">
+                                <div class="bg-emerald-600 text-white rounded-3xl p-6 shadow-xl max-w-lg border-4 border-white transform hover:scale-105 transition-transform duration-300">
+                                    <div class="mb-3">
+                                        <Icons.Graduation />
+                                    </div>
+                                    <h1 class="text-2xl md:text-3xl font-extrabold mb-2 leading-snug">کوییز تعاملی الگوهای عددی</h1>
+                                    <p class="text-xs md:text-sm text-emerald-50 font-medium mb-5">
+                                        خودت را در زمینه‌های اعداد زوج و فرد، مسائل صف، مضرب‌ها و الگوهای هندسی به چالش بکش!
+                                    </p>
+                                    <button 
+                                        onClick={handleStartQuiz}
+                                        class="bg-yellow-400 hover:bg-yellow-300 text-emerald-950 font-black text-base py-3 px-8 rounded-full shadow-md hover:shadow-lg transform hover:-translate-y-0.5 active:translate-y-0 transition-all duration-150 inline-flex items-center gap-2 focus:ring-4 focus:ring-yellow-200 focus:outline-none"
+                                    >
+                                        <span>شروع چالش ریاضی</span>
+                                        <Icons.Play />
+                                    </button>
+                                </div>
+                                <div class="flex gap-4 mt-4 text-emerald-800 text-[11px] font-bold">
+                                    <span class="bg-emerald-100/80 px-3 py-1 rounded-full"><Icons.CheckDouble /> ۱۰ سوال کاربردی کتاب</span>
+                                    <span class="bg-emerald-100/80 px-3 py-1 rounded-full"><Icons.Sparkles /> راهنمای کوتاه آموزشی</span>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Question Slide */}
+                        {gameState === 'quiz' && (
+                            <div class="grid grid-cols-1 md:grid-cols-12 gap-5 items-center my-auto h-full">
+                                <div class="md:col-span-7 flex flex-col justify-between h-full gap-3">
+                                    <div>
+                                        <span class={`inline-block bg-gradient-to-r ${currentQuestion.categoryColor} text-white font-bold text-[10px] px-3 py-0.5 rounded-full shadow-sm mb-2`}>
+                                            {currentQuestion.category}
+                                        </span>
+                                        <h2 class="text-base md:text-lg font-black text-slate-800 mb-2 leading-relaxed">
+                                            {toPersian(currentQuestion.id)}. {currentQuestion.question}
+                                        </h2>
+                                    </div>
+
+                                    <div class="flex-grow flex items-center justify-center my-0.5">
+                                        <div class="w-full max-w-sm">
+                                            {currentQuestion.illustration}
+                                        </div>
+                                    </div>
+
+                                    <div class="min-h-[40px]">
+                                        {showHint ? (
+                                            <div class="bg-yellow-50 border-r-4 border-yellow-400 p-2 rounded-l-lg flex items-start gap-1.5 animate-scale-up">
+                                                <Icons.Lightbulb />
+                                                <p class="text-[11px] text-yellow-800 font-bold leading-relaxed">{currentQuestion.hint}</p>
+                                            </div>
+                                        ) : (
+                                            <button 
+                                                onClick={() => { playSynthSound('click'); setShowHint(true); }}
+                                                class="text-[11px] text-indigo-600 font-bold hover:text-indigo-800 transition duration-200 inline-flex items-center gap-1 focus:outline-none"
+                                            >
+                                                <Icons.Question />
+                                                <span>به یک سرنخ کوچک آموزشی نیاز داری؟ کلیک کن!</span>
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
+
+                                <div class="md:col-span-5 flex flex-col justify-center gap-2">
+                                    {currentQuestion.options.map((option, idx) => {
+                                        return (
+                                            <button
+                                                key={idx}
+                                                onClick={() => handleOptionClick(option)}
+                                                disabled={selectedOption !== null}
+                                                class={`w-full text-right p-3 rounded-xl border-2 transition-all duration-200 flex items-center justify-between text-xs md:text-sm font-bold shadow-sm focus:outline-none focus:ring-1 focus:ring-offset-1
+                                                    ${selectedOption === null 
+                                                        ? 'bg-white border-slate-200 hover:border-indigo-400 hover:bg-indigo-50/50 hover:shadow active:scale-[0.99]' 
+                                                        : selectedOption === option 
+                                                            ? option.isCorrect 
+                                                                ? 'bg-emerald-50 border-emerald-500 text-emerald-800 shadow-md ring-2 ring-emerald-300'
+                                                                : 'bg-rose-50 border-rose-500 text-rose-800 shadow-md ring-2 ring-rose-300 animate-shake'
+                                                            : 'bg-gray-50 border-gray-100 text-gray-400 opacity-60'
+                                                    }`}
+                                            >
+                                                <div class="flex items-center gap-2">
+                                                    <span class={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black shadow-sm ml-2
+                                                        ${selectedOption === null 
+                                                            ? 'bg-indigo-100 text-indigo-700' 
+                                                            : selectedOption === option 
+                                                                ? option.isCorrect ? 'bg-emerald-500 text-white' : 'bg-rose-500 text-white'
+                                                                : 'bg-gray-200 text-gray-400'
+                                                        }`}
+                                                    >
+                                                        {option.key}
+                                                    </span>
+                                                    <span>{option.text}</span>
+                                                </div>
+                                                {selectedOption === option && (
+                                                    option.isCorrect ? <Icons.CheckCircle /> : <Icons.XCircle />
+                                                )}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Interactive Correct Feedback Slide */}
+                        {gameState === 'feedback-correct' && (
+                            <div class="flex flex-col items-center justify-center text-center my-auto max-w-sm mx-auto p-5 bg-emerald-50 rounded-3xl border-4 border-emerald-400 shadow-xl">
+                                <div class="w-14 h-14 bg-emerald-500 text-white rounded-full flex items-center justify-center text-2xl shadow-lg mb-3 animate-bounce">
+                                    <Icons.ThumbsUp />
+                                </div>
+                                <h2 class="text-xl md:text-2xl font-black text-emerald-800 mb-1">عالی و درخشان بود!</h2>
+                                <p class="text-xs md:text-sm text-emerald-700 font-medium mb-4">
+                                    پاسخ شما کاملاً درست است. آفرین بر این دقت و هوش ریاضی!
+                                </p>
+                                <button 
+                                    onClick={handleNextQuestion}
+                                    class="bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs md:text-sm py-2.5 px-6 rounded-full shadow-md hover:shadow-lg transition-all duration-150 inline-flex items-center gap-1.5 focus:ring-2 focus:ring-emerald-200 focus:outline-none"
+                                >
+                                    <span>سوال بعدی</span>
+                                    <Icons.ArrowLeft />
+                                </button>
+                            </div>
+                        )}
+
+                        {/* Interactive Wrong Feedback Slide */}
+                        {gameState === 'feedback-wrong' && (
+                            <div class="flex flex-col items-center justify-center text-center my-auto max-w-sm mx-auto p-5 bg-rose-50 rounded-3xl border-4 border-rose-400 shadow-xl">
+                                <div class="w-12 h-12 bg-rose-500 text-white rounded-full flex items-center justify-center text-xl shadow-lg mb-3">
+                                    <Icons.RotateLeft />
+                                </div>
+                                <h2 class="text-xl md:text-2xl font-black text-rose-800 mb-1">دوباره تلاش کن!</h2>
+                                <p class="text-xs md:text-sm text-rose-700 font-medium mb-4">
+                                    کمی تمرکز کن، راهنما و شکل را دوباره ببین و یک‌بار دیگر امتحان کن.
+                                </p>
+                                <div class="flex gap-2">
+                                    <button 
+                                        onClick={handleTryAgain}
+                                        class="bg-rose-600 hover:bg-rose-500 text-white font-black text-xs py-2 px-4 rounded-full shadow-md hover:shadow-lg transition-all duration-150 inline-flex items-center gap-1 focus:ring-2 focus:ring-rose-200 focus:outline-none"
+                                    >
+                                        <span>برگشت به سوال</span>
+                                    </button>
+                                    <button 
+                                        onClick={handleNextQuestion}
+                                        class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold text-xs py-2 px-3 rounded-full transition-all duration-150 focus:outline-none"
+                                    >
+                                        <span>رد شدن از سوال</span>
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Score/Congratulation Slide */}
+                        {gameState === 'score' && (
+                            <div class="flex flex-col items-center justify-center text-center my-auto py-1">
+                                <div class="bg-indigo-900 text-white p-5 rounded-3xl shadow-2xl max-w-md border-4 border-white/20">
+                                    
+                                    <div class="flex justify-center gap-2 mb-3">
+                                        {[1, 2, 3].map((star) => (
+                                            <Icons.Star key={star} filled={star <= getStars()} />
+                                        ))}
+                                    </div>
+
+                                    <h2 class="text-xl md:text-2xl font-black mb-1.5 text-yellow-300">آزمون به پایان رسید!</h2>
+                                    <p class="text-[11px] text-indigo-200 font-medium mb-4">
+                                        مبحت عدد و الگوهای عددی ریاضی ششم دبستان را با موفقیت تمرین کردی.
+                                    </p>
+
+                                    <div class="grid grid-cols-2 gap-3 max-w-xs mx-auto mb-5">
+                                        <div class="bg-white/10 p-2 rounded-xl border border-white/10 text-center">
+                                            <span class="text-[10px] block text-indigo-300">پاسخ‌های درست</span>
+                                            <span class="text-base font-extrabold text-white">{toPersian(score)} از {toPersian(quizData.length)}</span>
+                                        </div>
+                                        <div class="bg-white/10 p-2 rounded-xl border border-white/10 text-center">
+                                            <span class="text-[10px] block text-indigo-300">درصد موفقیت</span>
+                                            <span class="text-base font-extrabold text-white">{toPersian(Math.round((score / quizData.length) * 100))}٪</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex justify-center gap-2">
+                                        <button 
+                                            onClick={handleStartQuiz}
+                                            class="bg-yellow-400 hover:bg-yellow-300 text-indigo-950 font-black text-xs py-2.5 px-5 rounded-full shadow-md hover:shadow-lg transition duration-150 inline-flex items-center gap-1.5 focus:outline-none"
+                                        >
+                                            <span>آزمون مجدد</span>
+                                        </button>
+                                        <button 
+                                            onClick={handleGoHome}
+                                            class="bg-white/20 hover:bg-white/30 text-white font-bold text-xs py-2.5 px-4 rounded-full transition duration-150 focus:outline-none"
+                                        >
+                                            <span>صفحه اصلی</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Navigation Footer */}
+                        {gameState !== 'intro' && gameState !== 'score' && (
+                            <div class="flex items-center justify-between border-t border-slate-200 pt-3 mt-1">
+                                <button
+                                    onClick={handlePreviousQuestion}
+                                    disabled={currentQuestionIndex === 0}
+                                    class={`px-3 py-1.5 rounded-lg text-xs font-bold transition duration-150 flex items-center gap-1 focus:outline-none
+                                        ${currentQuestionIndex === 0 
+                                            ? 'text-slate-300 cursor-not-allowed' 
+                                            : 'text-slate-600 hover:bg-slate-100'
+                                        }`}
+                                Social>
+                                    <Icons.ArrowRight />
+                                    <span class="mr-1">سوال قبلی</span>
+                                </button>
+                                
+                                <div class="flex gap-1">
+                                    {quizData.map((_, idx) => (
+                                        <span 
+                                            key={idx} 
+                                            class={`w-2 h-2 rounded-full transition-all duration-200
+                                                ${idx === currentQuestionIndex 
+                                                    ? 'bg-indigo-600 scale-125' 
+                                                    : answersStatus[idx] === true 
+                                                        ? 'bg-emerald-500' 
+                                                        : answersStatus[idx] === false 
+                                                            ? 'bg-rose-400' 
+                                                            : 'bg-slate-300'
+                                                }`}
+                                        ></span>
+                                    ))}
+                                </div>
+
+                                <button
+                                    onClick={handleNextQuestion}
+                                    class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-lg transition duration-150 flex items-center gap-1 shadow focus:outline-none"
+                                >
+                                    <span>{currentQuestionIndex === quizData.length - 1 ? 'پایان کوییز' : 'سوال بعدی'}</span>
+                                    <Icons.ArrowLeft />
+                                </button>
+                            </div>
+                        )}
+
+                    </div>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
