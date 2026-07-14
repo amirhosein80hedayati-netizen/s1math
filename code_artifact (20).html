@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>آزمون تعاملی بخش‌پذیری و عددنویسی - ششم ابتدایی</title>
+    
+    <!-- Beautiful Persian Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;700;900&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Vazirmatn', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        /* Modern Scrollbar & Custom Selections */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        
+        .custom-shadow {
+            box-shadow: 0 20px 40px -15px rgba(15, 23, 42, 0.06);
+        }
+
+        canvas#confetti-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 50;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen flex flex-col justify-center items-center text-slate-800 p-4 md:p-8 relative overflow-x-hidden">
+
+    <canvas id="confetti-canvas"></canvas>
+
+    <!-- Main Container -->
+    <main class="w-full max-w-4xl bg-white rounded-[2rem] border border-slate-100 p-6 md:p-10 custom-shadow relative z-10">
+        
+        <!-- Game Stats & Progress Area -->
+        <div class="flex items-center justify-between mb-8 pb-6 border-b border-slate-100">
+            <!-- Progress Circle/Label -->
+            <div class="flex items-center gap-3">
+                <span class="w-3 h-3 rounded-full bg-blue-500 animate-pulse"></span>
+                <span class="text-sm md:text-base font-bold text-slate-500">
+                    سوال <span id="current-question-num" class="text-blue-600 font-black text-lg">۱</span> از <span id="total-questions-num" class="font-bold">۱۰</span>
+                </span>
+            </div>
+            
+            <!-- Difficulty Tag -->
+            <div id="difficulty-tag" class="px-4 py-1.5 rounded-full text-xs md:text-sm font-black transition-all duration-300">
+                سطح: آسان
+            </div>
+
+            <!-- Score and Stars -->
+            <div class="flex items-center gap-4 bg-slate-50 px-4 py-2 rounded-2xl">
+                <div class="flex items-center gap-1.5">
+                    <span class="text-yellow-500 text-lg">⭐</span>
+                    <span id="star-count" class="font-bold text-slate-700">۰</span>
+                </div>
+                <div class="h-4 w-px bg-slate-200"></div>
+                <div class="text-sm font-bold text-slate-600">
+                    امتیاز: <span id="score-val" class="text-emerald-600 font-extrabold text-lg">۰</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden mb-10">
+            <div id="progress-bar" class="bg-gradient-to-l from-blue-500 to-emerald-400 h-full w-0 transition-all duration-500 ease-out"></div>
+        </div>
+
+        <!-- Question Section -->
+        <div id="question-card" class="mb-8">
+            <!-- Huge, clear question container -->
+            <div class="bg-slate-50/50 rounded-2xl p-6 md:p-8 border border-slate-100 text-center mb-8">
+                <h2 id="question-text" class="text-2xl md:text-3.5xl font-black text-slate-800 leading-relaxed">
+                    در حال بارگذاری سوال...
+                </h2>
+            </div>
+
+            <!-- Option Grid -->
+            <div id="options-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Buttons will be injected here dynamically -->
+            </div>
+        </div>
+
+        <!-- Scaffolding (Socratic Guided Hint) Button & Box -->
+        <div class="mb-8">
+            <div class="flex justify-center">
+                <button id="hint-toggle-btn" onclick="revealHint()" class="flex items-center gap-2 bg-amber-50 hover:bg-amber-100 text-amber-800 font-bold px-6 py-3 rounded-2xl border border-amber-200/60 transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-sm">
+                    <span>راهنما و سرنخ کمکی 💡</span>
+                </button>
+            </div>
+            
+            <!-- Dynamic Hidden Hint Panel -->
+            <div id="hint-panel" class="hidden mt-4 bg-amber-50/40 border border-amber-100 rounded-2xl p-5 text-amber-900 transition-all duration-300">
+                <div class="flex items-start gap-3">
+                    <span class="text-xl">💡</span>
+                    <div>
+                        <h4 class="font-bold text-amber-900 mb-1">یک راهنمایی کوچک:</h4>
+                        <p id="hint-text" class="text-sm md:text-base leading-relaxed text-amber-800">
+                            فرمول‌ها و نکات در این بخش نمایش داده می‌شوند تا بدون دریافت پاسخ مستقیم، خودتان مسئله را حل کنید!
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Immediate Feedback Box -->
+        <div id="feedback-panel" class="hidden rounded-2xl p-6 mb-8 transition-all duration-300">
+            <div class="flex items-start gap-4">
+                <span id="feedback-icon" class="text-3xl"></span>
+                <div>
+                    <h3 id="feedback-title" class="font-black text-lg md:text-xl mb-1">نتیجه</h3>
+                    <p id="feedback-text" class="text-sm md:text-base leading-relaxed"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation / Action Area -->
+        <div class="flex justify-end pt-4 border-t border-slate-100">
+            <button id="next-btn" onclick="goToNextQuestion()" class="hidden bg-slate-800 hover:bg-slate-900 text-white font-extrabold px-8 py-3.5 rounded-2xl transition-all duration-200 transform hover:scale-[1.02] active:scale-95 shadow-md flex items-center gap-2">
+                <span>سوال بعدی</span>
+                <span>⬅️</span>
+            </button>
+        </div>
+
+    </main>
+
+    <!-- Results Panel (Initially Hidden) -->
+    <div id="results-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-md hidden items-center justify-center p-4 z-50 transition-all duration-300">
+        <div class="bg-white rounded-[2.5rem] max-w-xl w-full p-8 md:p-10 text-center shadow-2xl relative overflow-hidden">
+            <!-- Top Confetti Decor -->
+            <div class="absolute -top-10 -left-10 w-40 h-40 bg-emerald-50 rounded-full filter blur-xl opacity-70"></div>
+            <div class="absolute -top-10 -right-10 w-40 h-40 bg-blue-50 rounded-full filter blur-xl opacity-70"></div>
+
+            <div class="w-24 h-24 bg-emerald-50 text-emerald-600 rounded-3xl flex items-center justify-center mx-auto mb-6 text-5xl">
+                🏆
+            </div>
+
+            <h2 class="text-3xl font-black text-slate-800 mb-2">آفرین قهرمان ریاضی!</h2>
+            <p class="text-slate-500 text-sm md:text-base mb-8">شما آزمون بخش‌پذیری و عددنویسی را با موفقیت پشت سر گذاشتید.</p>
+
+            <!-- Score Cards Grid -->
+            <div class="grid grid-cols-2 gap-4 mb-8">
+                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                    <span class="text-xs text-slate-400 block mb-1">امتیاز نهایی</span>
+                    <span id="final-score" class="text-2xl font-black text-emerald-600">۰</span>
+                </div>
+                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                    <span class="text-xs text-slate-400 block mb-1">ستاره‌های طلایی</span>
+                    <span id="final-stars" class="text-2xl font-black text-amber-500">⭐ ۰</span>
+                </div>
+            </div>
+
+            <!-- Custom Badge Title -->
+            <div class="bg-gradient-to-r from-emerald-50 to-blue-50 border border-emerald-100/50 rounded-2xl p-4 mb-8">
+                <span class="text-xs text-emerald-700 font-bold block mb-1">نشان شایستگی شما</span>
+                <span id="badge-title" class="text-lg font-black text-emerald-800">یاور فیثاغورث ⚡</span>
+            </div>
+
+            <button onclick="restartQuiz()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-extrabold py-4 rounded-2xl transition-all duration-200 transform hover:scale-[1.01] active:scale-95 shadow-lg">
+                شروع مجدد آزمون 🔄
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Farsi Digit Converter Utility
+        const farsiDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+        function toFarsi(num) {
+            if (num === null || num === undefined) return '';
+            return num.toString().replace(/\d/g, x => farsiDigits[x]);
+        }
+
+        // Web Audio Synthesizer (Premium Chimes)
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        function playChime(isCorrect) {
+            try {
+                if (isCorrect) {
+                    // Success Melodic Chime
+                    const osc1 = audioCtx.createOscillator();
+                    const osc2 = audioCtx.createOscillator();
+                    const gainNode = audioCtx.createGain();
+                    
+                    osc1.type = 'sine';
+                    osc1.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+                    osc1.frequency.exponentialRampToValueAtTime(1046.50, audioCtx.currentTime + 0.3); // C6
+                    
+                    osc2.type = 'triangle';
+                    osc2.frequency.setValueAtTime(659.25, audioCtx.currentTime); // E5
+                    osc2.frequency.exponentialRampToValueAtTime(1318.51, audioCtx.currentTime + 0.3); // E6
+                    
+                    gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+                    
+                    osc1.connect(gainNode);
+                    osc2.connect(gainNode);
+                    gainNode.connect(audioCtx.destination);
+                    
+                    osc1.start();
+                    osc2.start();
+                    osc1.stop(audioCtx.currentTime + 0.4);
+                    osc2.stop(audioCtx.currentTime + 0.4);
+                } else {
+                    // Soft error sound
+                    const osc = audioCtx.createOscillator();
+                    const gainNode = audioCtx.createGain();
+                    
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(220.00, audioCtx.currentTime); // A3
+                    osc.frequency.linearRampToValueAtTime(110.00, audioCtx.currentTime + 0.25); // A2
+                    
+                    gainNode.gain.setValueAtTime(0.12, audioCtx.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                    
+                    osc.connect(gainNode);
+                    gainNode.connect(audioCtx.destination);
+                    
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.3);
+                }
+            } catch (e) {
+                console.log('Audio Context issues are skipped smoothly.');
+            }
+        }
+
+        // Questions Array
+        const quizData = [
+            // --- EASY LEVELS ---
+            {
+                level: "آسان",
+                levelClass: "bg-emerald-50 text-emerald-700 border-emerald-100",
+                question: "کدام یک از اعداد زیر همگی بر ۲ بخش‌پذیر هستند؟ <br><span class='text-blue-600 block mt-2 text-lg md:text-2xl font-bold'>۱۲۰۰۵۸ , ۱۳۴۵۱۰ , ۸۰۰۰۶۳, ۱۳۵۷۴ , ۲۴۶۸۰</span>",
+                options: [
+                    "۱۲۰۰۵۸ و ۱۳۵۷۴",
+                    "۱۲۰۰۵۸، ۱۳۴۵۱۰، ۱۳۵۷۴ و ۲۴۶۸۰",
+                    "۸۰۰۰۶۳ و ۲۴۶۸۰",
+                    "همه اعداد نوشته شده"
+                ],
+                correctIndex: 1,
+                hint: "به آخرین رقم سمت راست (یکان) هر عدد نگاه کنید. اگر زوج (یعنی ۰، ۲، ۴، ۶ یا ۸) باشد، آن عدد بر ۲ بخش‌پذیر است. آیا ۸۰۰۰۶۳ زوج است؟",
+                explanation: "آفرین! اعداد ۱۲۰۰۵۸، ۱۳۴۵۱۰، ۱۳۵۷۴ و ۲۴۶۸۰ همگی با رقم‌های زوج (۸، ۰، ۴، ۰) پایان می‌یابند پس بر ۲ بخش‌پذیرند. عدد ۸۰۰۰۶۳ چون به رقم ۳ (فرد) ختم می‌شود، بخش‌پذیر بر ۲ نیست."
+            },
+            {
+                level: "آسان",
+                levelClass: "bg-emerald-50 text-emerald-700 border-emerald-100",
+                question: "کدام یک از اعداد زیر هم بر ۲ و هم بر ۵ بخش‌پذیر هستند؟ <br><span class='text-blue-600 block mt-2 text-lg md:text-2xl font-bold'>۴۵۶۵۷۵ , ۷۸۴۳۲ , ۱۲۳۴۰ , ۲۳۴۶۰ , ۱۵۶۸۵</span>",
+                options: [
+                    "۴۵۶۵۷۵ و ۱۵۶۸۵",
+                    "۱۲۳۴۰ و ۲۳۴۶۰",
+                    "۷۸۴۳۲ و ۱۲۳۴۰",
+                    "تمام اعداد بالا"
+                ],
+                correctIndex: 1,
+                hint: "عددی هم بر ۲ و هم بر ۵ بخش‌پذیر است که رقم یکان آن همزمان زوج باشد و مضرب ۵. این یعنی رقم یکان فقط و فقط می‌تواند یک عدد خاص باشد! حدس زدید؟",
+                explanation: "درست است! عددی که هم بر ۲ و هم بر ۵ بخش‌پذیر است، حتماً بر ۱۰ نیز بخش‌پذیر است و رقم یکان آن باید صفر (۰) باشد. بنابراین ۱۲۳۴۰ و ۲۳۴۶۰ پاسخ‌های صحیح هستند."
+            },
+            {
+                level: "آسان",
+                levelClass: "bg-emerald-50 text-emerald-700 border-emerald-100",
+                question: "یک عدد سه رقمی بنویسید که بر ۵ بخش‌پذیر باشد ولی بر ۲ بخش‌پذیر نباشد. کدام گزینه این شرط را دارد؟",
+                options: [
+                    "۳۵۰",
+                    "۱۰۰",
+                    "۲۴۵",
+                    "۵۰۲"
+                ],
+                correctIndex: 2,
+                hint: "برای بخش‌پذیری بر ۵، رقم یکان باید ۰ یا ۵ باشد. اما چون نباید بر ۲ بخش‌پذیر باشد، رقم یکان نباید زوج باشد. پس رقم یکان دقیقاً باید چه باشد؟",
+                explanation: "احسنت! عدد ۲۴۵ به رقم ۵ ختم می‌شود پس بر ۵ بخش‌پذیر است، اما چون یکان آن فرد است بر ۲ بخش‌پذیر نیست. عدد ۳۵۰ و ۱۰۰ بر هر دو بخش‌پذیرند و ۵۰۲ اصلاً بر ۵ بخش‌پذیر نیست."
+            },
+            // --- MEDIUM LEVELS ---
+            {
+                level: "متوسط",
+                levelClass: "bg-amber-50 text-amber-700 border-amber-100",
+                question: "کوچک‌ترین عدد سه رقمی بخش‌پذیر بر ۲ را «بدون تکرار ارقام» مشخص کنید.",
+                options: [
+                    "۱۰۰",
+                    "۱۰۲",
+                    "۱۲۰",
+                    "۱۰۴"
+                ],
+                correctIndex: 1,
+                hint: "کوچک‌ترین رقم‌ها برای مرتبه صدگان و دهگان به ترتیب ۱ و ۰ هستند. برای یکان چه رقمی بگذاریم که تکراری نباشد و عدد همچنان زوج بماند؟",
+                explanation: "عالی بود! کوچک‌ترین عدد سه رقمی ۱۰۰ است اما تکرار رقم دارد. با انتخاب ارقام متمایز، به عدد ۱۰۲ می‌رسیم که رقم یکان آن (۲) زوج و تمام ارقامش غیرتکراری است."
+            },
+            {
+                level: "متوسط",
+                levelClass: "bg-amber-50 text-amber-700 border-amber-100",
+                question: "بزرگ‌ترین عدد سه رقمی بخش‌پذیر بر ۵ را «بدون تکرار ارقام» بیابید.",
+                options: [
+                    "۹۹۵",
+                    "۹۸۵",
+                    "۹۸۰",
+                    "۹۷۵"
+                ],
+                correctIndex: 1,
+                hint: "برای بزرگ‌ترین عدد، صدگان را ۹ و دهگان را ۸ انتخاب می‌کنیم. حالا برای یکان چه رقمی بگذاریم که تکراری نباشد و عدد بر ۵ بخش‌پذیر باشد؟ (گزینه‌های ما ۰ یا ۵ هستند)",
+                explanation: "دقیقاً! بزرگ‌ترین صدگان ۹ و بزرگ‌ترین دهگان غیرتکراری ۸ است. برای یکان می‌توانیم ۵ یا ۰ بگذاریم. چون ۵ بزرگ‌تر از ۰ است و تکراری هم نیست، عدد ۹۸۵ پاسخ نهایی ماست."
+            },
+            {
+                level: "متوسط",
+                levelClass: "bg-amber-50 text-amber-700 border-amber-100",
+                question: "کوچک‌ترین عدد سه رقمی بخش‌پذیر بر ۱۰ با «تکرار مجاز ارقام» کدام است؟",
+                options: [
+                    "۱۰۰",
+                    "۱۱۰",
+                    "۱۲۰",
+                    "۱۰۱"
+                ],
+                correctIndex: 0,
+                hint: "کوچک‌ترین عدد سه رقمی ممکن چیست؟ آیا یکان آن صفر است؟ اگر بله، پس قطعاً بر ۱۰ بخش‌پذیر است و تکرار رقم هم در آن مجاز است.",
+                explanation: "صحیح است! عدد ۱۰۰ کوچک‌ترین عدد سه رقمی در ریاضیات است. از آنجا که یکان آن صفر است، بر ۱۰ بخش‌پذیر است و استفاده تکراری از رقم ۰ در آن کاملاً مجاز است."
+            },
+            {
+                level: "متوسط",
+                levelClass: "bg-amber-50 text-amber-700 border-amber-100",
+                question: "کدام یک از اعداد زیر بر ۳ بخش‌پذیر هستند؟ <br><span class='text-blue-600 block mt-2 text-lg md:text-2xl font-bold'>۵۶۳۲۰۲ , ۱۳۴۴۵ , ۱۰۰۰۴۳۱ , ۲۸۳۸۰۲ , ۳۴۲۹۹۱</span>",
+                options: [
+                    "۵۶۳۲۰۲ و ۱۰۰۰۴۳۱",
+                    "۱۳۴۴۵ و ۳۴۲۹۹۱",
+                    "فقط ۵۶۳۲۰۲",
+                    "۲۸۳۸۰۲ و ۱۰۰۰۴۳۱"
+                ],
+                correctIndex: 0,
+                hint: "قانون بخش‌پذیری بر ۳: ارقام هر عدد را با هم جمع کنید. اگر حاصل جمع بر ۳ بخش‌پذیر باشد، خود عدد نیز بخش‌پذیر است. مثلاً مجموع ارقام ۵۶۳۲۰۲ برابر است با: ۵+۶+۳+۲+۰+۲ = ۱۸.",
+                explanation: "درست حدس زدید! مجموع ارقام ۵۶۳۲۰۲ برابر ۱۸ (بخش‌پذیر بر ۳) و مجموع ارقام ۱۰۰۰۴۳۱ برابر ۹ (بخش‌پذیر بر ۳) است. پس هر دو عدد بر ۳ بخش‌پذیرند."
+            },
+            {
+                level: "متوسط",
+                levelClass: "bg-amber-50 text-amber-700 border-amber-100",
+                question: "کدام یک از اعداد زیر بر ۹ بخش‌پذیر است؟ <br><span class='text-blue-600 block mt-2 text-lg md:text-2xl font-bold'>۱۲۳۴۵۳ , ۱۰۰۰۹۸ , ۲۳۴۷۰۱ , ۲۹۹۷ , ۱۳۵۰۰۸</span>",
+                options: [
+                    "۱۰۰۰۹۸ و ۲۹۹۷",
+                    "۱۲۳۴۵۳ و ۱۳۵۰۰۸",
+                    "فقط ۲۹۹۷",
+                    "۲۳۴۷۰۱ و ۱۰۰۰۹۸"
+                ],
+                correctIndex: 0,
+                hint: "مانند قانون بخش‌پذیری بر ۳، برای ۹ نیز باید مجموع ارقام را به دست آورید. اگر مجموع ارقام بر ۹ بخش‌پذیر باشد، کل عدد بر ۹ بخش‌پذیر است. مجموع ارقام ۱۰۰۰۹۸ چقدر است؟ (۱+۰+۰+۰+۹+۸ = ۱۸)",
+                explanation: "فوق‌العاده بود! مجموع ارقام ۱۰۰۰۹۸ برابر ۱۸ و مجموع ارقام ۲۹۹۷ برابر ۲۷ است. هر دو عدد ۱۸ و ۲۷ بر ۹ بخش‌پذیرند، بنابراین این دو عدد بر ۹ بخش‌پذیر هستند."
+            },
+            // --- HARD LEVELS ---
+            {
+                level: "سخت",
+                levelClass: "bg-rose-50 text-rose-700 border-rose-100",
+                question: "کدام یک از اعداد زیر همگی بر ۶ بخش‌پذیر هستند؟ <br><span class='text-blue-600 block mt-2 text-lg md:text-2xl font-bold'>۸۷۳۰۲۱۰ , ۷۸۰۰۲۴۳ , ۵۶۴۰۳۲۴ , ۱۰۰۰۹۳ , ۴۸۷۳۸</span>",
+                options: [
+                    "فقط ۷۸۰۰۲۴۳",
+                    "۸۷۳۰۲۱۰، ۵۶۴۰۳۲۴ و ۴۸۷۳۸",
+                    "۱۰۰۰۹۳ و ۴۸۷۳۸",
+                    "همه اعداد بالا"
+                ],
+                correctIndex: 1,
+                hint: "یادآوری: عددی بر ۶ بخش‌پذیر است که همزمان زوج باشد (بخش‌پذیر بر ۲) و مجموع ارقامش بر ۳ بخش‌پذیر باشد. پس ابتدا اعداد فرد را از دایره بررسی خارج کنید!",
+                explanation: "آفرین بر هوش شما! اعداد فرد مانند ۷۸۰۰۲۴۳ و ۱۰۰۰۹۳ اصلاً بر ۲ بخش‌پذیر نیستند پس بر ۶ هم نمی‌توانند باشند. سه عدد دیگر هم زوج هستند و هم مجموع ارقام آن‌ها بر ۳ بخش‌پذیر است."
+            },
+            {
+                level: "سخت",
+                levelClass: "bg-rose-50 text-rose-700 border-rose-100",
+                question: "در جای خالی عدد زیر چه رقمی قرار دهیم تا بر ۹ بخش‌پذیر شود؟ <br><span class='text-blue-600 block mt-2 text-3xl font-extrabold'>۳۴□</span>",
+                options: [
+                    "۱",
+                    "۲",
+                    "۵",
+                    "۸"
+                ],
+                correctIndex: 1,
+                hint: "مجموع ارقام داده شده ۳ + ۴ = ۷ است. چه رقمی به ۷ اضافه کنیم تا حاصل جمع بر ۹ بخش‌پذیر شود؟ (کمک: نزدیک‌ترین مضرب ۹ بعد از عدد ۷، خود عدد ۹ است!)",
+                explanation: "کاملاً صحیح است! اگر در جای خالی رقم ۲ را بگذاریم، عدد ۳۴۲ ساخته می‌شود. مجموع ارقام آن ۳+۴+۲=۹ می‌شود که دقیقاً بر ۹ بخش‌پذیر است."
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let stars = 0;
+        let hintUsedThisQuestion = false;
+        let answeredThisQuestion = false;
+
+        // Elements
+        const currentQuestionNumEl = document.getElementById('current-question-num');
+        const totalQuestionsNumEl = document.getElementById('total-questions-num');
+        const difficultyTagEl = document.getElementById('difficulty-tag');
+        const starCountEl = document.getElementById('star-count');
+        const scoreValEl = document.getElementById('score-val');
+        const progressBarEl = document.getElementById('progress-bar');
+        const questionTextEl = document.getElementById('question-text');
+        const optionsContainerEl = document.getElementById('options-container');
+        const hintToggleBtn = document.getElementById('hint-toggle-btn');
+        const hintPanel = document.getElementById('hint-panel');
+        const hintTextEl = document.getElementById('hint-text');
+        const feedbackPanel = document.getElementById('feedback-panel');
+        const feedbackIcon = document.getElementById('feedback-icon');
+        const feedbackTitle = document.getElementById('feedback-title');
+        const feedbackTextEl = document.getElementById('feedback-text');
+        const nextBtn = document.getElementById('next-btn');
+
+        function initQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            stars = 0;
+            totalQuestionsNumEl.textContent = toFarsi(quizData.length);
+            updateStats();
+            renderQuestion();
+        }
+
+        function updateStats() {
+            currentQuestionNumEl.textContent = toFarsi(currentQuestionIndex + 1);
+            starCountEl.textContent = toFarsi(stars);
+            scoreValEl.textContent = toFarsi(score);
+            
+            // Progress Bar Update
+            const percent = ((currentQuestionIndex) / quizData.length) * 100;
+            progressBarEl.style.width = `${percent}%`;
+        }
+
+        function renderQuestion() {
+            const currentQuestion = quizData[currentQuestionIndex];
+            
+            // Hide panels and next button
+            hintPanel.classList.add('hidden');
+            feedbackPanel.classList.add('hidden');
+            nextBtn.classList.add('hidden');
+            hintUsedThisQuestion = false;
+            answeredThisQuestion = false;
+
+            // Update difficulty design tag
+            difficultyTagEl.className = `px-4 py-1.5 rounded-full text-xs md:text-sm font-black transition-all duration-300 ${currentQuestion.levelClass}`;
+            difficultyTagEl.textContent = `سطح: ${currentQuestion.level}`;
+
+            // Large, readable question
+            questionTextEl.innerHTML = currentQuestion.question;
+            hintTextEl.textContent = currentQuestion.hint;
+
+            // Generate clean option buttons
+            optionsContainerEl.innerHTML = '';
+            currentQuestion.options.forEach((option, index) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-right p-5 rounded-2xl border-2 border-slate-100 hover:border-blue-500 hover:bg-blue-50/20 active:bg-blue-50/40 text-slate-700 font-bold text-base md:text-lg transition-all duration-200 shadow-sm flex items-center justify-between group";
+                btn.onclick = () => selectOption(index);
+                
+                // Content with Farsi digits
+                btn.innerHTML = `
+                    <span>${toFarsi(option)}</span>
+                    <span class="w-6 h-6 rounded-full border border-slate-300 group-hover:border-blue-500 transition-all flex items-center justify-center text-xs text-white">✓</span>
+                `;
+                optionsContainerEl.appendChild(btn);
+            });
+        }
+
+        function revealHint() {
+            if (hintPanel.classList.contains('hidden')) {
+                hintPanel.classList.remove('hidden');
+                hintUsedThisQuestion = true;
+            } else {
+                hintPanel.classList.add('hidden');
+            }
+        }
+
+        function selectOption(index) {
+            if (answeredThisQuestion) return; // Prevent double answering
+            answeredThisQuestion = true;
+
+            const currentQuestion = quizData[currentQuestionIndex];
+            const isCorrect = (index === currentQuestion.correctIndex);
+            
+            // Apply visual response to buttons
+            const buttons = optionsContainerEl.querySelectorAll('button');
+            buttons.forEach((btn, idx) => {
+                btn.disabled = true;
+                if (idx === currentQuestion.correctIndex) {
+                    btn.className = "w-full text-right p-5 rounded-2xl border-2 border-emerald-500 bg-emerald-50/50 text-emerald-900 font-bold text-base md:text-lg transition-all shadow-sm flex items-center justify-between";
+                    btn.querySelector('span:last-child').className = "w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center text-xs text-white font-bold";
+                    btn.querySelector('span:last-child').innerHTML = "✓";
+                } else if (idx === index) {
+                    btn.className = "w-full text-right p-5 rounded-2xl border-2 border-rose-500 bg-rose-50/50 text-rose-900 font-bold text-base md:text-lg transition-all shadow-sm flex items-center justify-between";
+                    btn.querySelector('span:last-child').className = "w-6 h-6 rounded-full bg-rose-500 flex items-center justify-center text-xs text-white font-bold";
+                    btn.querySelector('span:last-child').innerHTML = "✕";
+                } else {
+                    btn.className = "w-full text-right p-5 rounded-2xl border-2 border-slate-100 bg-slate-50/20 text-slate-400 font-medium text-base md:text-lg transition-all shadow-sm flex items-center justify-between opacity-60";
+                }
+            });
+
+            // Calculate Score & Stars based on Socratic usage
+            let pointsGained = 0;
+            let starsGained = 0;
+
+            if (isCorrect) {
+                pointsGained = 10;
+                starsGained = hintUsedThisQuestion ? 1 : 2; // Extra reward if they solved without hinting!
+                score += pointsGained;
+                stars += starsGained;
+                playChime(true);
+                triggerConfetti();
+
+                // Setup Positive Feedback Panel
+                feedbackPanel.className = "rounded-2xl p-6 mb-8 bg-emerald-50 border border-emerald-100 text-emerald-900 transition-all duration-300";
+                feedbackIcon.textContent = "🎉";
+                feedbackTitle.textContent = "پاسخ صحیح!";
+                feedbackTextEl.textContent = currentQuestion.explanation;
+            } else {
+                playChime(false);
+                // Setup Supportive Guided Feedback Panel
+                feedbackPanel.className = "rounded-2xl p-6 mb-8 bg-rose-50 border border-rose-100 text-rose-900 transition-all duration-300";
+                feedbackIcon.textContent = "💡";
+                feedbackTitle.textContent = "تلاش خوبی بود!";
+                feedbackTextEl.innerHTML = `پاسخ درست نبود. نگران نباش! <br><span class="font-bold">تحلیل ریاضی:</span> ${currentQuestion.explanation}`;
+            }
+
+            // Update screen elements
+            updateStats();
+            feedbackPanel.classList.remove('hidden');
+            nextBtn.classList.remove('hidden');
+        }
+
+        function goToNextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < quizData.length) {
+                updateStats();
+                renderQuestion();
+            } else {
+                // Final Progress Bar full
+                progressBarEl.style.width = `100%`;
+                showResults();
+            }
+        }
+
+        function showResults() {
+            document.getElementById('final-score').textContent = toFarsi(score);
+            document.getElementById('final-stars').textContent = `⭐ ${toFarsi(stars)}`;
+
+            // Determine badge based on stars
+            let badge = "کارآموز جوان ریاضی 📐";
+            if (stars >= 18) {
+                badge = "نابغه بزرگ فیثاغورث 👑";
+            } else if (stars >= 14) {
+                badge = "یاور راستین ریاضی ⚡";
+            } else if (stars >= 8) {
+                badge = "پژوهشگر تلاشگر بخش‌پذیری 🔍";
+            }
+            document.getElementById('badge-title').textContent = badge;
+
+            document.getElementById('results-modal').classList.remove('hidden');
+            document.getElementById('results-modal').classList.add('flex');
+        }
+
+        function restartQuiz() {
+            document.getElementById('results-modal').classList.add('hidden');
+            document.getElementById('results-modal').classList.remove('flex');
+            initQuiz();
+        }
+
+        const canvas = document.getElementById("confetti-canvas");
+        const ctx = canvas.getContext("2d");
+        let confetti = [];
+        let animationFrameId = null;
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener("resize", resizeCanvas);
+        resizeCanvas();
+
+        class ConfettiParticle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * -canvas.height - 20;
+                this.rotation = Math.random() * 360;
+                this.rotationSpeed = Math.random() * 10 - 5;
+                this.size = Math.random() * 10 + 6;
+                this.color = `hsl(${Math.random() * 360}, 80%, 60%)`;
+                this.speedY = Math.random() * 4 + 3;
+                this.speedX = Math.random() * 4 - 2;
+            }
+            update() {
+                this.y += this.speedY;
+                this.x += this.speedX;
+                this.rotation += this.rotationSpeed;
+            }
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate((this.rotation * Math.PI) / 180);
+                ctx.fillStyle = this.color;
+                ctx.fillRect(-this.size / 2, -this.size / 2, this.size, this.size);
+                ctx.restore();
+            }
+        }
+
+        function triggerConfetti() {
+            confetti = [];
+            for (let i = 0; i < 100; i++) {
+                confetti.push(new ConfettiParticle());
+            }
+            if (animationFrameId) cancelAnimationFrame(animationFrameId);
+            animateConfetti();
+        }
+
+        function animateConfetti() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            let active = false;
+            confetti.forEach(p => {
+                p.update();
+                p.draw();
+                if (p.y < canvas.height) active = true;
+            });
+            if (active) {
+                animationFrameId = requestAnimationFrame(animateConfetti);
+            } else {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+        }
+
+        // Initialize quiz on load
+        window.onload = initQuiz;
+    </script>
+</body>
+</html>
