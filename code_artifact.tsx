@@ -1,0 +1,456 @@
+import React, { useState, useEffect } from 'react';
+
+// لغت‌نامه فارسی برای تبدیل عدد به حروف
+const yekan = ["", "یک", "دو", "سه", "چهار", "پنج", "شش", "هفت", "هشت", "نه"];
+const dahgan = ["", "ده", "بیست", "سی", "چهل", "پنجاه", "شصت", "هفتاد", "هشتاد", "نود"];
+const sadgan = ["", "صد", "دویست", "سیصد", "چهارصد", "پانصد", "ششصد", "هفتصد", "هشتصد", "نهصد"];
+const dahToBeest = ["ده", "یازده", "دوازده", "سیزده", "چهارده", "پانزده", "شانزده", "هفده", "هجده", "نوزده"];
+
+function convertThreeDigits(numStr) {
+  const num = parseInt(numStr, 10);
+  if (num === 0 || isNaN(num)) return "";
+  const s = Math.floor(num / 100);
+  const d = Math.floor((num % 100) / 10);
+  const y = num % 10;
+
+  let parts = [];
+  if (s > 0) parts.push(sadgan[s]);
+  
+  if (d === 1) {
+    parts.push(dahToBeest[y]);
+  } else {
+    if (d > 0) parts.push(dahgan[d]);
+    if (y > 0) parts.push(yekan[y]);
+  }
+  return parts.join(" و ");
+}
+
+function numToPersian(digitsArray) {
+  const bill = digitsArray.slice(0, 3).map(x => x || "0").join("");
+  const mil = digitsArray.slice(3, 6).map(x => x || "0").join("");
+  const thos = digitsArray.slice(6, 9).map(x => x || "0").join("");
+  const ones = digitsArray.slice(9, 12).map(x => x || "0").join("");
+
+  const bVal = parseInt(bill, 10) || 0;
+  const mVal = parseInt(mil, 10) || 0;
+  const tVal = parseInt(thos, 10) || 0;
+  const oVal = parseInt(ones, 10) || 0;
+
+  if (bVal === 0 && mVal === 0 && tVal === 0 && oVal === 0) {
+    return "صفر";
+  }
+
+  let result = [];
+  if (bVal > 0) result.push(convertThreeDigits(bill) + " میلیارد");
+  if (mVal > 0) result.push(convertThreeDigits(mil) + " میلیون");
+  if (tVal > 0) result.push(convertThreeDigits(thos) + " هزار");
+  if (oVal > 0) result.push(convertThreeDigits(ones));
+
+  return result.filter(x => x !== "").join(" و ");
+}
+
+// لیست چالش‌های هوشمند برای یادگیری مفهوم صفر و طبقات عدد بزرگ
+const challenges = [
+  { text: "عدد «پنج میلیارد و بیست هزار و چهار» را بسازید.", target: "5000020004" },
+  { text: "عدد «سیصد و پنجاه میلیون و هفتصد» را بسازید.", target: "000350000700" },
+  { text: "عدد «نُه میلیارد و چهارصد میلیون و پنجاه» را بسازید.", target: "94000000050" },
+  { text: "عدد «دوازده میلیارد و سه هزار» را بسازید.", target: "012000003000" },
+  { text: "عدد «شش میلیارد و هفتاد میلیون و دویست هزار» را بسازید.", target: "6070200000" },
+  { text: "عدد «دو میلیارد و هشت» را بسازید.", target: "2000000008" },
+  { text: "عدد «پانصد میلیارد و پانصد هزار» را بسازید.", target: "500000500000" }
+];
+
+export default function App() {
+  // ۱۲ رقم: از صدگان میلیارد در اندیس ۰ تا یکانِ یکی‌ها در اندیس ۱۱
+  const [digits, setDigits] = useState(Array(12).fill(""));
+  const [selectedSlot, setSelectedSlot] = useState(null);
+  const [currentChallengeIndex, setCurrentChallengeIndex] = useState(0);
+  const [gameMode, setGameMode] = useState(false);
+  const [challengeSuccess, setChallengeSuccess] = useState(false);
+  const [score, setScore] = useState(0);
+  const [zoomScale, setZoomScale] = useState(100); // مقیاس بزرگ‌نمایی جدول به درصد
+
+  // تولید فرکانس صوتی ملایم برای بازخورد تعاملی در کلاس
+  const playSound = (isSuccess) => {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      if (isSuccess) {
+        osc.frequency.setValueAtTime(523.25, ctx.currentTime);
+        osc.frequency.setValueAtTime(659.25, ctx.currentTime + 0.1);
+        osc.frequency.setValueAtTime(783.99, ctx.currentTime + 0.2);
+        gain.gain.setValueAtTime(0.3, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.4);
+      } else {
+        osc.frequency.setValueAtTime(300, ctx.currentTime);
+        gain.gain.setValueAtTime(0.1, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.1);
+      }
+    } catch (e) {}
+  };
+
+  const handleDigitSelect = (digit) => {
+    if (selectedSlot !== null) {
+      const newDigits = [...digits];
+      newDigits[selectedSlot] = digit;
+      setDigits(newDigits);
+      setSelectedSlot(null);
+      playSound(false);
+    }
+  };
+
+  const clearDigit = (index) => {
+    const newDigits = [...digits];
+    newDigits[index] = "";
+    setDigits(newDigits);
+    playSound(false);
+  };
+
+  const clearAll = () => {
+    setDigits(Array(12).fill(""));
+    setChallengeSuccess(false);
+    playSound(false);
+  };
+
+  const loadChallenge = (index) => {
+    setCurrentChallengeIndex(index);
+    setDigits(Array(12).fill(""));
+    setChallengeSuccess(false);
+  };
+
+  useEffect(() => {
+    if (gameMode) {
+      const targetStr = challenges[currentChallengeIndex].target.padStart(12, '0');
+      const currentStr = digits.map(d => d || "0").join("");
+      
+      if (currentStr === targetStr && digits.some(d => d !== "")) {
+        setChallengeSuccess(true);
+        setScore(prev => prev + 10);
+        playSound(true);
+      } else {
+        setChallengeSuccess(false);
+      }
+    }
+  }, [digits, gameMode, currentChallengeIndex]);
+
+  const rawNumberString = digits.map(d => d || "0").join("");
+  const parsedNumber = parseInt(rawNumberString, 10) || 0;
+  const formattedNumber = parsedNumber.toLocaleString('fa-IR');
+  const persianWords = numToPersian(digits);
+
+  const getExpandedForm = () => {
+    const placeValues = [
+      100000000000, 10000000000, 1000000000,
+      100000000, 10000000, 1000000,
+      100000, 10000, 1000,
+      100, 10, 1
+    ];
+    const terms = [];
+    digits.forEach((digit, idx) => {
+      if (digit && digit !== "0") {
+        const val = parseInt(digit, 10) * placeValues[idx];
+        terms.push(`(${digit} × ${placeValues[idx].toLocaleString('fa-IR')})`);
+      }
+    });
+    return terms.length > 0 ? terms.join(" + ") : "۰";
+  };
+
+  // تعریف ساختار طبقات به صورت چپ به راست (بزرگ‌ترین واحد در چپ)
+  const periods = [
+    {
+      title: "میلیاردها",
+      color: "bg-amber-50 border-amber-200 text-amber-800",
+      headerColor: "bg-amber-500",
+      indices: [0, 1, 2] // صدگان میلیارد، دهگان میلیارد، یکان میلیارد
+    },
+    {
+      title: "میلیون‌ها",
+      color: "bg-purple-50 border-purple-200 text-purple-800",
+      headerColor: "bg-purple-500",
+      indices: [3, 4, 5] // صدگان میلیون، دهگان میلیون، یکان میلیون
+    },
+    {
+      title: "هزارها",
+      color: "bg-emerald-50 border-emerald-200 text-emerald-800",
+      headerColor: "bg-emerald-500",
+      indices: [6, 7, 8] // صدگان هزار، دهگان هزار، یکان هزار
+    },
+    {
+      title: "یکی‌ها",
+      color: "bg-sky-50 border-sky-200 text-sky-800",
+      headerColor: "bg-sky-500",
+      indices: [9, 10, 11] // صدگان، دهگان، یکان
+    }
+  ];
+
+  const columnLabels = ["صدگان", "دهگان", "یکان"];
+
+  return (
+    <div className="min-h-screen bg-slate-50 p-2 md:p-6 flex flex-col items-center font-sans overflow-x-hidden" dir="rtl">
+      {/* هدر بالایی */}
+      <div className="w-full max-w-6xl text-center mb-4">
+        <h1 className="text-2xl md:text-3xl font-extrabold text-indigo-950 mb-1">
+          جدول ارزش مکانی ششم 🚀
+        </h1>
+        <p className="text-slate-500 text-xs md:text-sm">
+          آموزش طبقه‌ها و مرتبه‌های عددی پایه ششم از صدگان میلیارد تا یکان
+        </p>
+      </div>
+
+      {/* بخش کنترل سایز جدول و انتخاب حالت بازی */}
+      <div className="w-full max-w-6xl flex flex-col sm:flex-row justify-between items-center gap-4 bg-white p-3 rounded-2xl border border-slate-200 mb-6 shadow-sm">
+        
+        {/* دکمه‌های تغییر وضعیت اکتشاف و بازی */}
+        <div className="flex gap-2">
+          <button
+            onClick={() => { setGameMode(false); clearAll(); }}
+            className={`px-4 py-1.5 rounded-full font-bold transition-all text-xs ${
+              !gameMode
+                ? 'bg-indigo-600 text-white shadow-md'
+                : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+            }`}
+          >
+            📝 اکتشاف آزاد
+          </button>
+          <button
+            onClick={() => { setGameMode(true); loadChallenge(0); }}
+            className={`px-4 py-1.5 rounded-full font-bold transition-all text-xs ${
+              gameMode
+                ? 'bg-indigo-600 text-white shadow-md'
+                : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+            }`}
+          >
+            🎮 بازی و چالش
+          </button>
+        </div>
+
+        {/* اسلایدر بزرگ‌نمایی دستی برای هماهنگی با هر نوع پروژکتور */}
+        <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+          <span className="text-xs font-bold text-slate-600 whitespace-nowrap">🔎 بزرگ‌نمایی جدول:</span>
+          <input
+            type="range"
+            min="50"
+            max="100"
+            value={zoomScale}
+            onChange={(e) => setZoomScale(Number(e.target.value))}
+            className="w-24 sm:w-32 accent-indigo-600 cursor-pointer"
+          />
+          <span className="text-xs font-black text-indigo-600 w-8" dir="ltr">{zoomScale}%</span>
+        </div>
+
+      </div>
+
+      {/* بخش چالش‌ها در حالت بازی */}
+      {gameMode && (
+        <div className="w-full max-w-6xl bg-white border border-indigo-100 rounded-2xl p-4 mb-6 shadow-sm transition-all">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-3">
+            <div>
+              <span className="bg-rose-100 text-rose-700 px-2.5 py-0.5 rounded-md text-[10px] font-bold">چالش شماره {currentChallengeIndex + 1}</span>
+              <h3 className="text-base md:text-lg font-bold text-slate-800 mt-1">
+                {challenges[currentChallengeIndex].text}
+              </h3>
+            </div>
+            
+            <div className="flex items-center gap-3">
+              <span className="text-xs font-semibold text-slate-600">امتیاز: {score}</span>
+              <button
+                onClick={() => loadChallenge((currentChallengeIndex + 1) % challenges.length)}
+                className="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold px-3 py-1.5 rounded-xl text-xs transition-colors"
+              >
+                چالش بعدی ➔
+              </button>
+            </div>
+          </div>
+
+          {challengeSuccess && (
+            <div className="mt-3 bg-emerald-50 border border-emerald-200 text-emerald-800 p-2 rounded-xl text-center font-bold text-sm animate-bounce">
+              🎉 آفرین! عدد را کاملاً درست و با صفرهای جادویی‌اش ساختی!
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* جدول ارزش مکانی تعاملی به صورت کاملاً چپ به راست با قابلیت تغییر اندازه داینامیک */}
+      <div className="w-full max-w-6xl bg-white rounded-2xl border border-slate-200 shadow-lg overflow-hidden mb-6 flex justify-center">
+        <div 
+          className="w-full transition-transform duration-200 origin-top"
+          style={{ transform: `scale(${zoomScale / 100})` }}
+        >
+          {/* حذف مرز پایینی غیرضروری برای حفظ سادگی ظاهر کارت */}
+          <div className="grid grid-cols-4" dir="ltr">
+            {periods.map((period, pIdx) => (
+              <div key={pIdx} className="flex flex-col border-r last:border-r-0 border-slate-200">
+                {/* نام طبقه */}
+                <div className={`${period.headerColor} text-white text-center py-1.5 md:py-2 font-black text-xs md:text-sm tracking-wide shadow-inner`}>
+                  {period.title}
+                </div>
+
+                {/* ستون‌های مرتبه‌ها */}
+                <div className="grid grid-cols-3 bg-white">
+                  {period.indices.map((slotIdx, colSubIdx) => {
+                    const hasDigit = digits[slotIdx] !== "";
+                    const isSelected = selectedSlot === slotIdx;
+                    return (
+                      <div
+                        key={slotIdx}
+                        className={`flex flex-col items-center p-1 md:p-2 border-r last:border-r-0 border-slate-100 ${period.color} transition-all`}
+                      >
+                        {/* برچسب فارسی مرتبه */}
+                        <span className="text-[9px] md:text-xs font-bold text-slate-500 mb-1">
+                          {columnLabels[colSubIdx]}
+                        </span>
+
+                        {/* دکمه انتخاب رقم با ابعاد هوشمند و واکنش‌گرا */}
+                        <button
+                          onClick={() => setSelectedSlot(isSelected ? null : slotIdx)}
+                          className={`w-8 h-12 xs:w-10 xs:h-16 sm:w-12 sm:h-20 md:w-14 md:h-24 rounded-lg md:rounded-2xl flex flex-col justify-between items-center p-1 md:p-2 border-2 transition-all cursor-pointer select-none ${
+                            isSelected
+                              ? 'border-indigo-600 bg-indigo-50 shadow-md scale-105'
+                              : hasDigit
+                              ? 'border-slate-300 bg-white shadow-sm'
+                              : 'border-dashed border-slate-300 bg-slate-50 hover:bg-slate-100'
+                          }`}
+                        >
+                          {/* دکمه حذف رقم انتخابی */}
+                          {hasDigit ? (
+                            <div 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                clearDigit(slotIdx);
+                              }}
+                              className="w-3.5 h-3.5 bg-rose-500 text-white text-[9px] rounded-full flex items-center justify-center font-bold hover:scale-110 active:scale-95 shadow"
+                            >
+                              ×
+                            </div>
+                          ) : (
+                            <div className="w-3.5 h-3.5" />
+                          )}
+
+                          {/* نمایش رقم فعلی */}
+                          <span className="text-sm xs:text-base sm:text-xl md:text-3xl font-black text-slate-800">
+                            {hasDigit ? digits[slotIdx] : "؟"}
+                          </span>
+
+                          <span className="text-[7px] md:text-[9px] text-slate-400 font-semibold">
+                            کلیک
+                          </span>
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* پنجره بازشوی انتخاب رقم */}
+      {selectedSlot !== null && (
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl p-5 max-w-sm w-full shadow-2xl border border-slate-100 animate-in fade-in zoom-in-95" dir="rtl">
+            <div className="text-center mb-3">
+              <h4 className="font-bold text-slate-700 text-sm md:text-base">
+                انتخاب رقم برای خانهٔ <span className="text-indigo-600 font-black">
+                  {periods[Math.floor(selectedSlot / 3)].title} / {columnLabels[selectedSlot % 3]}
+                </span>
+              </h4>
+              <p className="text-[10px] text-slate-400 mt-0.5">یک رقم انتخاب کنید</p>
+            </div>
+
+            {/* گرید ارقام ۰ تا ۹ */}
+            <div className="grid grid-cols-5 gap-2 mb-4">
+              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 0].map(digit => (
+                <button
+                  key={digit}
+                  onClick={() => handleDigitSelect(digit.toString())}
+                  className="w-10 h-10 bg-slate-50 hover:bg-indigo-600 hover:text-white rounded-xl font-black text-lg text-slate-800 transition-all active:scale-90 flex items-center justify-center border border-slate-100 shadow-sm"
+                >
+                  {digit}
+                </button>
+              ))}
+            </div>
+
+            <div className="flex gap-2">
+              <button
+                onClick={() => {
+                  const newDigits = [...digits];
+                  newDigits[selectedSlot] = "0";
+                  setDigits(newDigits);
+                  setSelectedSlot(null);
+                  playSound(false);
+                }}
+                className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2 rounded-xl text-xs transition-all"
+              >
+                قرار دادن صفر
+              </button>
+              <button
+                onClick={() => setSelectedSlot(null)}
+                className="flex-1 bg-rose-500 hover:bg-rose-600 text-white font-bold py-2 rounded-xl text-xs transition-all"
+              >
+                انصراف
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* خروجی‌های محاسباتی و کلامی زیر جدول */}
+      <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-3 gap-4">
+        
+        {/* خروجی اول: خوانش کلامی عدد به حروف فارسی */}
+        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm flex flex-col justify-between">
+          <div>
+            <h3 className="text-xs font-bold text-slate-500 mb-1">🗣️ خوانش عدد به حروف فارسی</h3>
+            <p className="text-base font-black text-indigo-950 leading-relaxed bg-slate-50 p-3 rounded-xl min-h-[60px] border border-slate-100">
+              {persianWords}
+            </p>
+          </div>
+          <p className="text-[10px] text-slate-400 mt-1">
+            * به جایگاه طبقات و کلمات «میلیارد»، «میلیون» و «هزار» دقت کنید.
+          </p>
+        </div>
+
+        {/* خروجی دوم: نوشتن عدد استاندارد با تفکیک ۳ رقمی */}
+        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm flex flex-col justify-between">
+          <div>
+            <h3 className="text-xs font-bold text-slate-500 mb-1">🔢 عدد استاندارد (با تفکیک طبقات)</h3>
+            <div className="text-2xl font-black text-slate-800 text-center tracking-wider bg-slate-50 py-3 rounded-xl border border-slate-100 select-all">
+              {formattedNumber}
+            </div>
+          </div>
+          <div className="flex justify-between items-center mt-2">
+            <span className="text-[10px] text-slate-400">نمایش سه رقم سه رقم از راست</span>
+            <button
+              onClick={clearAll}
+              className="bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-[10px] px-2.5 py-1 rounded-lg transition-all"
+            >
+              🧹 پاک کردن جدول
+            </button>
+          </div>
+        </div>
+
+        {/* خروجی سوم: بسط ضربی و تحلیلی ارزش مکانی */}
+        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm flex flex-col justify-between">
+          <div>
+            <h3 className="text-xs font-bold text-slate-500 mb-1">📐 بسط تحلیلی (ارزش مکانی ضربی)</h3>
+            <div className="text-[10px] font-bold text-slate-700 bg-slate-50 p-3 rounded-xl min-h-[60px] border border-slate-100 break-all leading-relaxed" dir="ltr">
+              {getExpandedForm()}
+            </div>
+          </div>
+          <p className="text-[10px] text-slate-400 mt-1">
+            * حاصل ضرب هر رقم در ارزش مکانی خانه‌اش به صورت تفکیک شده.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
