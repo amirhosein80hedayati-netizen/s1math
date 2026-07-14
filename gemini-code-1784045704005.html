@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>جزوه اکتشافی بخش‌پذیری ششم - نسخه عمودی ارتقایافته</title>
+    
+    <!-- Premium Persian Font (Vazirmatn) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS for elegant design system -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Vazirmatn', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            background-color: #f8fafc;
+            background-size: 30px 30px;
+            background-image: radial-gradient(#e2e8f0 1.2px, transparent 1.2px);
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        /* Slide layout with premium glassmorphism and deep shadows */
+        .portrait-slide {
+            box-shadow: 0 20px 40px -15px rgba(15, 23, 42, 0.05),
+                        0 8px 16px -6px rgba(15, 23, 42, 0.02),
+                        0 30px 80px -20px rgba(15, 23, 42, 0.04);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Interactive card with spring animations and subtle colored glow */
+        .interactive-num-card {
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .interactive-num-card:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 12px 20px -8px rgba(14, 165, 233, 0.15);
+        }
+
+        /* Smooth slide content transitions */
+        .slide-transition {
+            animation: slideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* CSS rules to enforce portrait printing on A4 paper */
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 0.8cm;
+            }
+            body {
+                background: white !important;
+                background-image: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body class="text-slate-800 min-h-screen flex flex-col items-center justify-center p-4 md:p-6 lg:p-8">
+
+    <!-- Confetti Canvas overlay for success celebrations -->
+    <canvas id="confetti-canvas" class="fixed top-0 left-0 w-full h-full pointer-events-none z-50"></canvas>
+
+    <!-- Vertical Presentation Canvas Card (A4 Portrait Aspect Ratio Optimized) -->
+    <main id="main-slide" class="w-full max-w-2xl bg-white border border-slate-100 rounded-3xl p-5 md:p-8 portrait-slide min-h-[680px] flex flex-col justify-between relative overflow-hidden transition-all duration-300">
+        
+        <!-- Subtle Vector Gradients for Visual Depth -->
+        <div class="absolute -top-40 -right-40 w-80 h-80 bg-emerald-50/20 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-sky-50/20 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div class="h-full flex flex-col justify-between gap-5 flex-1">
+            <!-- 1. Slide Top Bar -->
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3 shrink-0">
+                <div class="flex items-center gap-2">
+                    <div id="slide-header-icon" class="bg-gradient-to-tr from-sky-50 to-sky-100/80 text-sky-600 w-9 h-9 rounded-xl flex items-center justify-center border border-sky-200/50 shadow-sm shrink-0">
+                        <svg class="w-4.5 h-4.5 text-sky-600 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    </div>
+                    <div>
+                        <h2 id="slide-header-title" class="text-base md:text-lg font-black text-slate-800 tracking-tight">قوانین بخش‌پذیری</h2>
+                    </div>
+                </div>
+                <div id="slide-step-badge" class="bg-gradient-to-r from-slate-100 to-slate-200/70 text-slate-700 border border-slate-200/80 text-[10px] font-black px-2.5 py-1.5 rounded-lg shrink-0 shadow-sm">
+                    گام ۱ از ۷
+                </div>
+            </div>
+
+            <!-- 2. Standard Slide Content Container (Steps 1 to 7) -->
+            <div id="standard-slide-body" class="flex flex-col gap-5 flex-1 justify-center slide-transition">
+                <!-- Question Section -->
+                <div class="flex flex-col gap-4">
+                    <p id="slide-prompt-text" class="text-base md:text-lg font-black text-slate-800 flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping shrink-0"></span>
+                        کدام عددها بخش‌پذیر هستند؟
+                    </p>
+
+                    <!-- Target Number Cards Grid -->
+                    <div id="cards-wrapper" class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        <!-- Injected via JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Socratic Clue Container -->
+                <div class="bg-gradient-to-br from-indigo-50/60 via-sky-50/40 to-emerald-50/10 border border-sky-200/80 rounded-2xl p-5 md:p-6 flex flex-col md:flex-row gap-4 shadow-sm hover:shadow-md hover:border-sky-300 transition-all duration-300">
+                    <div class="bg-white text-sky-600 w-12 h-12 rounded-xl flex items-center justify-center border border-sky-100 shadow-md shrink-0 self-start md:self-center">
+                        <svg class="w-6 h-6 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="text-sm md:text-base font-black text-indigo-950 mb-1 flex items-center gap-1.5">
+                            <span class="text-base">💡</span>
+                            <span>چه چیزی بین پاسخ‌های درست مشترک است؟</span>
+                        </h4>
+                        <p id="slide-socratic-clue" class="text-xs md:text-sm text-slate-700 leading-relaxed font-semibold">
+                            به رقم یکان این عددها دقت کن. چه ویژگی مشترکی در رقم یکان عددهای بخش‌پذیر می‌بینی؟
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Result & Discovery Box -->
+                <div class="border border-emerald-100 bg-emerald-50/10 rounded-2xl p-4 border-r-4 border-r-emerald-500 relative shadow-sm flex flex-col justify-between min-h-[140px]">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-1.5">
+                            <div class="bg-emerald-100/50 text-emerald-700 w-6.5 h-6.5 rounded-lg flex items-center justify-center">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M15 7a2 2 0 012 2m4 0a6 6 0 11-7.743-5.743L11 5H2v5h3v10h10V10h3l1-1z"></path></svg>
+                            </div>
+                            <h4 class="text-[11px] font-black text-emerald-950">نتیجه و قانون کشف‌شده</h4>
+                        </div>
+                        <button onclick="toggleDiscoveryBox()" id="reveal-btn" class="no-print text-[9px] font-black text-emerald-800 bg-emerald-100 border border-emerald-200 px-2.5 py-1.5 rounded-lg hover:bg-emerald-200 transition-all">
+                            کشف کردم! 🔑 مشاهده قانون
+                        </button>
+                    </div>
+
+                    <!-- Revealed Rule and Details -->
+                    <div id="rule-content-box" class="transition-all duration-300 flex-1 flex flex-col justify-center">
+                        <p id="slide-rule-text" class="text-xs md:text-sm text-emerald-900 font-bold leading-relaxed mb-2">
+                            اگر رقم یکان عدد یکی از ۰، ۲، ۴، ۶، ۸ باشد، عدد بر ۲ بخش‌پذیر است.
+                        </p>
+                        <div class="bg-white/85 rounded-xl p-3 border border-emerald-100/60 text-[10px] md:text-xs text-slate-600 shadow-sm">
+                            <span class="font-extrabold text-emerald-800 block mb-1 flex items-center gap-1">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                مثال کاربردی:
+                            </span>
+                            <div id="slide-example-text" class="leading-relaxed">
+                                عدد ۸۴۶: فقط رقم ۶ را بررسی کن. نتیجه: ۸۴۶ بر ۲ بخش‌پذیر است.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. Slide Bottom Navigation Toolbar (No-Print) -->
+            <div class="flex items-center justify-between border-t border-slate-100 pt-3 shrink-0 no-print">
+                <button onclick="navigateSlide(-1)" id="prev-slide-btn" class="bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-black px-3.5 py-1.5 rounded-xl transition-all flex items-center gap-1 disabled:opacity-40 disabled:cursor-not-allowed">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 5l7 7-7 7"></path></svg>
+                    <span>گام قبلی</span>
+                </button>
+                
+                <button onclick="navigateSlide(1)" id="next-slide-btn" class="bg-slate-900 hover:bg-slate-800 text-white text-xs font-black px-3.5 py-1.5 rounded-xl transition-all flex items-center gap-1 disabled:opacity-40 disabled:cursor-not-allowed">
+                    <span>گام بعدی</span>
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M15 19l-7-7 7-7"></path></svg>
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- JavaScript Controllers -->
+    <script>
+        // RTL-friendly Persian digit translator
+        const persianDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+        function toPersian(num) {
+            if (num === null || num === undefined) return '';
+            return num.toString().replace(/\d/g, x => persianDigits[x]);
+        }
+
+        // Web Audio Synthesizer
+        let isAudioMuted = false;
+        let audioContext = null;
+
+        function initializeAudioSystem() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function playFrequencySound(freq, shapeType, duration) {
+            if (isAudioMuted) return;
+            try {
+                initializeAudioSystem();
+                const osc = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+                
+                osc.type = shapeType;
+                osc.frequency.value = freq;
+                
+                gain.gain.setValueAtTime(0.12, audioContext.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + duration);
+                
+                osc.connect(gain);
+                gain.connect(audioContext.destination);
+                
+                osc.start();
+                osc.stop(audioContext.currentTime + duration);
+            } catch (err) {
+                console.log("Audio synthesis blocked or not supported.");
+            }
+        }
+
+        function playTapChime() {
+            playFrequencySound(587.33, 'sine', 0.08); // D5 pitch click
+        }
+
+        function playSuccessMelody() {
+            if (isAudioMuted) return;
+            try {
+                initializeAudioSystem();
+                const now = audioContext.currentTime;
+                const melody = [392.00, 493.88, 587.33, 783.99]; // G4, B4, D5, G5
+                melody.forEach((pitch, index) => {
+                    const osc = audioContext.createOscillator();
+                    const gain = audioContext.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.value = pitch;
+                    gain.gain.setValueAtTime(0.08, now + (index * 0.06));
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + (index * 0.06) + 0.5);
+                    osc.connect(gain);
+                    gain.connect(audioContext.destination);
+                    osc.start(now + (index * 0.06));
+                    osc.stop(now + (index * 0.06) + 0.5);
+                });
+            } catch (e) {}
+        }
+
+        const rulesDataset = [
+            {
+                id: 2,
+                title: "🔍 بخش‌پذیری بر ۲ را کشف کن!",
+                badge: "گام ۱ از ۷",
+                question: "کدام یک از عددهای زیر بر ۲ بخش‌پذیر هستند؟ (روی کارت‌های درست کلیک کن)",
+                numbers: [
+                    { value: 46, isCorrect: true },
+                    { value: 28, isCorrect: true },
+                    { value: 35, isCorrect: false },
+                    { value: 54, isCorrect: true },
+                    { value: 61, isCorrect: false },
+                    { value: 92, isCorrect: true },
+                    { value: 70, isCorrect: true },
+                    { value: 87, isCorrect: false }
+                ],
+                clue: "به رقم یکان (سمت راست‌ترین رقم) این عددها دقت کن. چه ویژگی مشترکی در رقم یکان عددهای بخش‌پذیر می‌بینی؟",
+                rule: "اگر رقم یکان عدد یکی از ۰، ۲، ۴، ۶، ۸ باشد، عدد بر ۲ بخش‌پذیر است.",
+                example: "عدد <strong>۸۴۶</strong>: فقط رقم یکان یعنی <strong>۶</strong> را بررسی کن. چون رقم یکان زوج است، کل عدد بر ۲ بخش‌پذیر است."
+            },
+            {
+                id: 5,
+                title: "🔍 بخش‌پذیری بر ۵ را کشف کن!",
+                badge: "گام ۲ از ۷",
+                question: "کدام یک از عددهای زیر بر ۵ بخش‌پذیر هستند؟",
+                numbers: [
+                    { value: 75, isCorrect: true },
+                    { value: 80, isCorrect: true },
+                    { value: 42, isCorrect: false },
+                    { value: 135, isCorrect: true },
+                    { value: 64, isCorrect: false },
+                    { value: 900, isCorrect: true },
+                    { value: 217, isCorrect: false },
+                    { value: 505, isCorrect: true }
+                ],
+                clue: "به آخرین رقم سمت راست (یکان) این عددها نگاه کن. چه رقم‌هایی در پایان این عددهای بخش‌پذیر تکرار شده‌اند؟",
+                rule: "اگر رقم یکان عددی ۰ یا ۵ باشد، آن عدد بر ۵ بخش‌پذیر است.",
+                example: "عدد <strong>۶۷۵</strong>: فقط رقم یکان آن یعنی <strong>۵</strong> را بررسی کن. نتیجه: بر ۵ بخش‌پذیر است."
+            },
+            {
+                id: 10,
+                title: "🔍 بخش‌پذیری بر ۱۰ را کشف کن!",
+                badge: "گام ۳ از ۷",
+                question: "کدام یک از عددهای زیر بر ۱۰ بخش‌پذیر هستند؟",
+                numbers: [
+                    { value: 130, isCorrect: true },
+                    { value: 405, isCorrect: false },
+                    { value: 780, isCorrect: true },
+                    { value: 92, isCorrect: false },
+                    { value: 550, isCorrect: true },
+                    { value: 1000, isCorrect: true },
+                    { value: 603, isCorrect: false },
+                    { value: 240, isCorrect: true }
+                ],
+                clue: "به یکان عددهای بخش‌پذیر بر ۱۰ نگاه کن. چه رقم ثابتی در یکان همه آن‌ها قرار دارد؟",
+                rule: "اگر رقم یکان عددی فقط ۰ باشد، آن عدد بر ۱۰ بخش‌پذیر است.",
+                example: "عدد <strong>۴۵۰</strong>: چون یکان آن <strong>۰</strong> است، بر ۱۰ بخش‌پذیر است."
+            },
+            {
+                id: 3,
+                title: "🔍 بخش‌پذیری بر ۳ را کشف کن!",
+                badge: "گام ۴ از ۷",
+                question: "کدام یک از عددهای زیر بر ۳ بخش‌پذیر هستند؟",
+                numbers: [
+                    { value: 123, isCorrect: true },
+                    { value: 456, isCorrect: true },
+                    { value: 209, isCorrect: false },
+                    { value: 723, isCorrect: true },
+                    { value: 811, isCorrect: false },
+                    { value: 504, isCorrect: true },
+                    { value: 332, isCorrect: false },
+                    { value: 912, isCorrect: true }
+                ],
+                clue: "ارقام هر عدد را با هم جمع کن. حاصل جمع چه رابطه‌ای با جدول ضرب ۳ دارد؟",
+                rule: "اگر مجموع ارقام یک عدد بر ۳ بخش‌پذیر باشد، خود عدد نیز بر ۳ بخش‌پذیر است.",
+                example: "عدد <strong>۴۵۶</strong>: مجموع رقم‌ها را حساب کن: ۴+۵+۶=۱۵. چون ۱۵ بر ۳ بخش‌پذیر است، پس ۴۵۶ بر ۳ بخش‌پذیر است."
+            },
+            {
+                id: 9,
+                title: "🔍 بخش‌پذیری بر ۹ را کشف کن!",
+                badge: "گام ۵ از ۷",
+                question: "کدام یک از عددهای زیر بر ۹ بخش‌پذیر هستند؟",
+                numbers: [
+                    { value: 729, isCorrect: true },
+                    { value: 549, isCorrect: true },
+                    { value: 802, isCorrect: false },
+                    { value: 108, isCorrect: true },
+                    { value: 345, isCorrect: false },
+                    { value: 981, isCorrect: true },
+                    { value: 444, isCorrect: false },
+                    { value: 270, isCorrect: true }
+                ],
+                clue: "مجموع رقم‌های هر عدد را حساب کن. اگر حاصل بر ۹ بخش‌پذیر باشد، چه نتیجه‌ای می‌گیری؟",
+                rule: "اگر مجموع رقم‌های یک عدد بر ۹ بخش‌پذیر باشد، کل آن عدد بر ۹ بخش‌پذیر است.",
+                example: "عدد <strong>۷۲۹</strong>: ارقامش را جمع کن: ۷+۲+۹=۱۸. چون ۱۸ بر ۹ بخش‌پذیر است، پس ۷۲۹ بر ۹ بخش‌پذیر است."
+            },
+            {
+                id: 6,
+                title: "🔍 بخش‌پذیری بر ۶ را کشف کن!",
+                badge: "گام ۶ از ۷",
+                question: "کدام یک از عددهای زیر بر ۶ بخش‌پذیر هستند؟ (باید هم‌زمان بر ۲ و ۳ بخش‌پذیر باشند)",
+                numbers: [
+                    { value: 24, isCorrect: true },
+                    { value: 32, isCorrect: false },
+                    { value: 78, isCorrect: true },
+                    { value: 105, isCorrect: false },
+                    { value: 540, isCorrect: true },
+                    { value: 312, isCorrect: true },
+                    { value: 89, isCorrect: false },
+                    { value: 426, isCorrect: true }
+                ],
+                clue: "برای بخش‌پذیری بر ۶، عدد باید دو شرط را هم‌زمان داشته باشد: هم زوج باشد (بر ۲) و هم مجموع ارقامش بر ۳ بخش‌پذیر باشد.",
+                rule: "عددی بر ۶ بخش‌پذیر است که هم‌زمان هم بر ۲ (زوج باشد) و هم بر ۳ بخش‌پذیر باشد.",
+                example: "عدد <strong>۲۴</strong>: یکان آن ۴ (زوج) است پس بر ۲ بخش‌پذیر است. مجموع ارقامش ۲+۴=۶ است که بر ۳ بخش‌پذیر است؛ پس بر ۶ نیز بخش‌پذیر است."
+            },
+            {
+                id: 12,
+                title: "🔍 بخش‌پذیری بر ۱۲ را کشف کن!",
+                badge: "گام ۷ از ۷",
+                question: "کدام یک از عددهای زیر بر ۱۲ بخش‌پذیر هستند؟ (باید هم‌زمان بر ۳ و ۴ بخش‌پذیر باشند)",
+                numbers: [
+                    { value: 36, isCorrect: true },
+                    { value: 48, isCorrect: true },
+                    { value: 26, isCorrect: false },
+                    { value: 120, isCorrect: true },
+                    { value: 75, isCorrect: false },
+                    { value: 300, isCorrect: true },
+                    { value: 88, isCorrect: false },
+                    { value: 144, isCorrect: true }
+                ],
+                clue: "برای بخش‌پذیری بر ۱۲، عدد باید هم‌زمان بر ۳ (مجموع ارقام بر ۳ بخش‌پذیر) و بر ۴ (دو رقم سمت راست بر ۴ بخش‌پذیر) باشد.",
+                rule: "عددی بر ۱۲ بخش‌پذیر است که هم‌زمان هم بر ۳ و هم بر ۴ بخش‌پذیر باشد.",
+                example: "عدد <strong>۳۶</strong>: مجموع رقم‌هاش ۳+۶=۹ است (بر ۳ بخش‌پذیر) و خودش هم بر ۴ بخش‌پذیر است (۳۶÷۴=۹). پس بر ۱۲ بخش‌پذیر است."
+            }
+        ];
+
+        let activeSlideIndex = 0;
+        let selectedAnswers = [];
+        let isDiscoveryRevealed = false;
+
+        // Initialize App on Window Load
+        window.onload = function() {
+            renderActiveSlide(0);
+            initializeConfettiSystem();
+        };
+
+        function renderActiveSlide(idx) {
+            activeSlideIndex = idx;
+            const slide = rulesDataset[idx];
+            
+            const slideEl = document.getElementById('main-slide');
+            const standardBody = document.getElementById('standard-slide-body');
+            
+            // Remove animation class and trigger reflow to restart animation
+            standardBody.classList.remove('slide-transition');
+            void standardBody.offsetWidth; 
+            standardBody.classList.add('slide-transition');
+
+            slideEl.style.opacity = 0.4;
+            
+            setTimeout(() => {
+                document.getElementById('slide-header-title').textContent = slide.title;
+                document.getElementById('slide-step-badge').textContent = toPersian(slide.badge);
+
+                // Handle Prev / Next Button disable states
+                document.getElementById('prev-slide-btn').disabled = idx === 0;
+                document.getElementById('next-slide-btn').disabled = idx === rulesDataset.length - 1;
+
+                // Normal Slide Rendering
+                selectedAnswers = Array(slide.numbers.length).fill(false);
+                document.getElementById('slide-prompt-text').innerHTML = `
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block animate-pulse shrink-0"></span>
+                    ${slide.question}
+                `;
+                document.getElementById('slide-socratic-clue').textContent = slide.clue;
+                document.getElementById('slide-rule-text').textContent = slide.rule;
+                document.getElementById('slide-example-text').innerHTML = slide.example;
+
+                // Generate Number Cards
+                const cardsWrapper = document.getElementById('cards-wrapper');
+                cardsWrapper.innerHTML = '';
+
+                slide.numbers.forEach((item, numIdx) => {
+                    const card = document.createElement('div');
+                    card.id = `num-box-${numIdx}`;
+                    card.onclick = () => handleCardClick(numIdx);
+                    card.className = "interactive-num-card cursor-pointer border-2 border-slate-200 bg-white hover:border-slate-300 hover:shadow-md rounded-2xl p-4 text-center flex flex-col items-center justify-center gap-2";
+                    
+                    card.innerHTML = `
+                        <span class="text-xl md:text-2xl font-black text-slate-800 tracking-wide select-none">
+                            ${toPersian(item.value)}
+                        </span>
+                        <div class="flex items-center gap-1 select-none no-print">
+                            <div id="check-icon-${numIdx}" class="w-3.5 h-3.5 rounded border border-slate-300 flex items-center justify-center text-[9px] font-black text-white bg-white transition-all duration-200"></div>
+                            <span class="text-[9px] text-slate-400 font-extrabold">بخش‌پذیر</span>
+                        </div>
+                    `;
+                    cardsWrapper.appendChild(card);
+                });
+
+                // Reset discovery state
+                isDiscoveryRevealed = false;
+                applyDiscoveryVisibility();
+                
+                slideEl.style.opacity = 1;
+            }, 100);
+        }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowLeft') {
+                navigateSlide(1);
+            } else if (event.key === 'ArrowRight') {
+                navigateSlide(-1);
+            }
+        });
+
+        // Touch gestures for iPad / Mobile devices
+        let touchStartX = 0;
+        let touchEndX = 0;
+        document.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, false);
+        document.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipeGesture();
+        }, false);
+
+        function handleSwipeGesture() {
+            if (touchEndX < touchStartX - 50) {
+                navigateSlide(1); // Swipe Left -> Next
+            }
+            if (touchEndX > touchStartX + 50) {
+                navigateSlide(-1); // Swipe Right -> Prev
+            }
+        }
+
+        function handleCardClick(numIdx) {
+            playTapChime();
+            selectedAnswers[numIdx] = !selectedAnswers[numIdx];
+            
+            const card = document.getElementById(`num-box-${numIdx}`);
+            const check = document.getElementById(`check-icon-${numIdx}`);
+
+            if (selectedAnswers[numIdx]) {
+                card.className = "interactive-num-card cursor-pointer border-2 border-emerald-500 bg-emerald-50/20 rounded-2xl p-4 text-center flex flex-col items-center justify-center gap-2 shadow-sm scale-[1.02]";
+                check.className = "w-3.5 h-3.5 rounded border border-emerald-500 flex items-center justify-center text-[9px] font-black text-white bg-emerald-500 transition-all duration-200";
+                check.innerHTML = '✓';
+            } else {
+                card.className = "interactive-num-card cursor-pointer border-2 border-slate-200 bg-white hover:border-slate-300 hover:shadow-md rounded-2xl p-4 text-center flex flex-col items-center justify-center gap-2";
+                check.className = "w-3.5 h-3.5 rounded border border-slate-300 flex items-center justify-center text-[9px] font-black text-white bg-white transition-all duration-200";
+                check.innerHTML = '';
+            }
+
+            evaluateSelectionPattern();
+        }
+
+        function evaluateSelectionPattern() {
+            const slide = rulesDataset[activeSlideIndex];
+            let perfectMatches = true;
+            let erroneousMatches = false;
+
+            slide.numbers.forEach((item, idx) => {
+                if (item.isCorrect && !selectedAnswers[idx]) perfectMatches = false;
+                if (!item.isCorrect && selectedAnswers[idx]) erroneousMatches = true;
+            });
+
+            if (perfectMatches && !erroneousMatches) {
+                if (!isDiscoveryRevealed) {
+                    playSuccessMelody();
+                    triggerConfettiStream();
+                }
+                isDiscoveryRevealed = true;
+                applyDiscoveryVisibility();
+            }
+        }
+
+        function navigateSlide(direction) {
+            const nextIdx = activeSlideIndex + direction;
+            if (nextIdx >= 0 && nextIdx < rulesDataset.length) {
+                renderActiveSlide(nextIdx);
+            }
+        }
+
+        function toggleDiscoveryBox() {
+            playTapChime();
+            isDiscoveryRevealed = !isDiscoveryRevealed;
+            applyDiscoveryVisibility();
+        }
+
+        function applyDiscoveryVisibility() {
+            const box = document.getElementById('rule-content-box');
+            const btn = document.getElementById('reveal-btn');
+
+            if (isDiscoveryRevealed) {
+                box.className = "mt-3 pt-3 border-t border-emerald-100 opacity-100 transition-all duration-300 flex-1 flex flex-col justify-center";
+                btn.textContent = "پنهان کردن قانون";
+                btn.className = "no-print text-[9px] font-black text-slate-500 bg-slate-100 border border-slate-200 px-2.5 py-1.5 rounded-lg hover:bg-slate-200 transition-all";
+            } else {
+                box.className = "hidden opacity-0";
+                btn.textContent = "کشف کردم! 🔑 مشاهده قانون";
+                btn.className = "no-print text-[9px] font-black text-white bg-gradient-to-r from-emerald-500 to-teal-600 border border-emerald-600 px-2.5 py-1.5 rounded-lg hover:from-emerald-600 hover:to-teal-700 transition-all shadow-md animate-bounce";
+            }
+        }
+
+        // Lightweight Performance Confetti Engine
+        let confettiCanvas, ctx;
+        let particles = [];
+        const confettiColors = ['#0284c7', '#10b981', '#3b82f6', '#34d399', '#60a5fa'];
+
+        // Initialize Confetti
+        function initializeConfettiSystem() {
+            confettiCanvas = document.getElementById('confetti-canvas');
+            ctx = confettiCanvas.getContext('2d');
+            adjustConfettiCanvasSize();
+            window.addEventListener('resize', adjustConfettiCanvasSize);
+        }
+
+        function adjustConfettiCanvasSize() {
+            if (confettiCanvas) {
+                confettiCanvas.width = window.innerWidth;
+                confettiCanvas.height = window.innerHeight;
+            }
+        }
+
+        function triggerConfettiStream() {
+            for (let i = 0; i < 90; i++) {
+                particles.push({
+                    x: Math.random() * confettiCanvas.width,
+                    y: confettiCanvas.height + 25,
+                    size: Math.random() * 8 + 6,
+                    color: confettiColors[Math.floor(Math.random() * confettiColors.length)],
+                    speedX: (Math.random() - 0.5) * 12,
+                    speedY: -Math.random() * 14 - 10,
+                    rotation: Math.random() * 360,
+                    rotationSpeed: (Math.random() - 0.5) * 5
+                });
+            }
+            if (particles.length === 90) {
+                requestAnimationFrame(updateConfettiCanvasFrame);
+            }
+        }
+
+        function updateConfettiCanvasFrame() {
+            ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+            let remainsActive = false;
+
+            for (let i = 0; i < particles.length; i++) {
+                let p = particles[i];
+                p.x += p.speedX;
+                p.y += p.speedY;
+                p.speedY += 0.35; // Gravity pull
+                p.rotation += p.rotationSpeed;
+
+                if (p.y < confettiCanvas.height) {
+                    remainsActive = true;
+                }
+
+                ctx.save();
+                ctx.translate(p.x, p.y);
+                ctx.rotate((p.rotation * Math.PI) / 180);
+                ctx.fillStyle = p.color;
+                ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+                ctx.restore();
+            }
+
+            if (remainsActive) {
+                requestAnimationFrame(updateConfettiCanvasFrame);
+            } else {
+                particles = [];
+            }
+        }
+    </script>
+</body>
+</html>
