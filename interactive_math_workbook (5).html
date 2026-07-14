@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دفترچه اندیشه ریاضی ششم: عددنویسی</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;550;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+            -webkit-font-smoothing: antialiased;
+        }
+        /* Premium engineering/math notebook grid pattern */
+        .premium-notebook-card {
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.03), 0 1px 3px 0 rgba(0, 0, 0, 0.01);
+            border: 1px solid #e2e8f0;
+            background-image: radial-gradient(#e2e8f0 1.2px, transparent 1.2px);
+            background-size: 24px 24px;
+            position: relative;
+        }
+        .math-ltr {
+            direction: ltr !important;
+            display: inline-block;
+        }
+        .page-content {
+            animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* Spiral binder effect on the right side for notebook aesthetic */
+        .notebook-spiral {
+            position: relative;
+        }
+        .notebook-spiral::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            right: -10px;
+            width: 5px;
+            background: repeating-linear-gradient(to bottom, #cbd5e1 0px, #cbd5e1 15px, transparent 15px, transparent 30px);
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body class="min-h-screen py-6 px-4 flex flex-col justify-between items-center relative overflow-x-hidden">
+
+<!-- Soft vector geometry for premium mathematical feeling without visual clutter -->
+<div class="absolute inset-0 pointer-events-none opacity-[0.03] z-0 overflow-hidden">
+    <svg class="absolute top-12 left-12 w-48 h-48 text-slate-800" viewBox="0 0 100 100">
+        <circle cx="50" cy="50" r="40" stroke="currentColor" stroke-width="1" fill="none" stroke-dasharray="3,3"/>
+        <line x1="50" y1="10" x2="50" y2="90" stroke="currentColor" stroke-width="0.5"/>
+    </svg>
+    <svg class="absolute bottom-24 right-12 w-64 h-64 text-slate-800" viewBox="0 0 100 100">
+        <rect x="20" y="20" width="60" height="60" stroke="currentColor" stroke-width="1" fill="none"/>
+        <line x1="20" y1="20" x2="80" y2="80" stroke="currentColor" stroke-width="0.5"/>
+    </svg>
+</div>
+
+<!-- Header -->
+<header class="w-full max-w-2xl mx-auto mb-5 relative z-10 flex flex-col sm:flex-row justify-between items-center gap-3 border-b border-slate-200 pb-3">
+    <div class="text-right">
+        <span class="text-[10px] font-bold text-blue-600 bg-blue-50 px-2.5 py-0.5 rounded-full border border-blue-100 uppercase tracking-wider">آموزش کشفی و گام‌به‌گام ریاضی ششم</span>
+        <h1 class="text-base font-extrabold text-slate-800 mt-1 flex items-center gap-2">
+            <span>دفترچه اندیشه ریاضی</span>
+            <span class="text-xs font-normal text-slate-400">| مبحث عددنویسی</span>
+        </h1>
+    </div>
+    
+    <!-- Tab binder navigation -->
+    <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-lg border border-slate-200" id="pagination-binder">
+        <!-- Generated dynamically by JavaScript -->
+    </div>
+</header>
+
+<!-- Main Container -->
+<main class="w-full max-w-2xl mx-auto flex-grow flex flex-col justify-center relative z-10">
+    <div class="premium-notebook-card bg-white rounded-2xl p-6 md:p-8 min-h-[490px] flex flex-col justify-between notebook-spiral shadow-sm">
+        
+        <!-- PAGE 1: Free Construction -->
+        <div id="page-1" class="page-content hidden">
+            <div class="flex items-center gap-2 mb-4">
+                <span class="w-2.5 h-2.5 rounded-full bg-blue-500 shadow-sm shadow-blue-300"></span>
+                <h2 class="text-sm font-bold text-slate-800">۱. چیدمان رقم‌ها (۳ رقمی بدون تکرار)</h2>
+            </div>
+            
+            <div class="space-y-4">
+                <div class="bg-blue-50/40 p-4 rounded-xl border border-blue-100">
+                    <h3 class="text-[11px] font-bold text-blue-800 mb-1.5 flex items-center gap-1.5">
+                        <span class="w-1.5 h-1.5 bg-blue-600 rounded-full"></span>
+                        فعالیت
+                    </h3>
+                    <p class="text-xs text-slate-600 leading-relaxed">
+                        سلام دوست من! کارت‌های رقم <span class="font-bold text-slate-800 bg-white px-1.5 py-0.5 rounded border">۳</span>، <span class="font-bold text-slate-800 bg-white px-1.5 py-0.5 rounded border">۴</span> و <span class="font-bold text-slate-800 bg-white px-1.5 py-0.5 rounded border">۵</span> رو لمس کن. اون‌ها رو توی خانه‌های خالی بذار و عددهای سه رقمی مختلف بساز.
+                    </p>
+                    
+                    <!-- Digit buttons -->
+                    <div class="flex justify-center gap-2.5 my-4">
+                        <button onclick="pressDigit(1, '۳')" id="btn-p1-3" class="w-11 h-11 bg-white border-2 border-slate-200 hover:border-blue-500 hover:scale-105 active:scale-95 font-bold text-sm rounded-xl shadow-sm transition-all duration-150">۳</button>
+                        <button onclick="pressDigit(1, '۴')" id="btn-p1-4" class="w-11 h-11 bg-white border-2 border-slate-200 hover:border-blue-500 hover:scale-105 active:scale-95 font-bold text-sm rounded-xl shadow-sm transition-all duration-150">۴</button>
+                        <button onclick="pressDigit(1, '۵')" id="btn-p1-5" class="w-11 h-11 bg-white border-2 border-slate-200 hover:border-blue-500 hover:scale-105 active:scale-95 font-bold text-sm rounded-xl shadow-sm transition-all duration-150">۵</button>
+                    </div>
+
+                    <!-- Slots in Standard LTR math style -->
+                    <div class="flex flex-col items-center gap-3">
+                        <div class="flex gap-2 justify-center" dir="ltr" id="slots-container-p1"></div>
+                        <div class="flex gap-2">
+                            <button onclick="clearState(1)" class="text-[10px] text-slate-500 hover:text-slate-700 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg transition font-medium">پاک کردن</button>
+                            <button onclick="registerNumber(1, 3)" class="text-[10px] text-blue-700 bg-blue-100 hover:bg-blue-200 px-3 py-1.5 rounded-lg font-bold transition">ثبت عدد ساخته شده</button>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-t border-slate-200/50">
+                        <span class="text-[10px] font-bold text-slate-400 block mb-1">عددهایی که ساختی:</span>
+                        <div id="found-numbers-p1" class="flex flex-wrap gap-1.5 text-[10px]">
+                            <span class="text-slate-400 italic">هنوز عددی نساخته‌ای...</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50/80 p-4 rounded-xl border border-slate-200/60">
+                    <h3 class="text-[11px] font-bold text-slate-700 mb-2 flex items-center gap-1.5">
+                        <span class="w-1.5 h-1.5 bg-slate-500 rounded-full"></span>
+                        کشف کن
+                    </h3>
+                    <ul class="list-disc list-inside text-[11px] text-slate-600 space-y-2 pr-1">
+                        <li>وقتی جای کارت‌ها رو با هم عوض می‌کنی، ارزش عددت چطوری تغییر می‌کنه؟</li>
+                        <li>چطور می‌تونی مطمئن بشی که همه حالت‌های ممکن برای نوشتن این عددهای سه رقمی رو پیدا کردی؟</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 2: Repeated Digits -->
+        <div id="page-2" class="page-content hidden">
+            <div class="flex items-center gap-2 mb-4">
+                <span class="w-2.5 h-2.5 rounded-full bg-orange-500 shadow-sm shadow-orange-300"></span>
+                <h2 class="text-sm font-bold text-slate-800">۲. تکرار مجاز رقم‌ها (۳ رقمی با تکرار)</h2>
+            </div>
+            
+            <div class="space-y-4">
+                <div class="bg-orange-50/40 p-4 rounded-xl border border-orange-100">
+                    <h3 class="text-[11px] font-bold text-orange-800 mb-1.5 flex items-center gap-1.5">
+                        <span class="w-1.5 h-1.5 bg-orange-600 rounded-full"></span>
+                        فعالیت
+                    </h3>
+                    <p class="text-xs text-slate-600 leading-relaxed">
+                        این بار هم می‌خوایم با رقم‌های <span class="font-bold text-slate-800 bg-white px-1.5 py-0.5 rounded border">۳</span>، <span class="font-bold text-slate-800 bg-white px-1.5 py-0.5 rounded border">۴</span> و <span class="font-bold text-slate-800 bg-white px-1.5 py-0.5 rounded border">۵</span> عدد سه رقمی بسازیم. اما تفاوتش اینه که هر چند بار بخوای می‌تونی از هر کارت استفاده کنی (مثلاً عدد ۳۳۳ هم قبوله).
+                    </p>
+
+                    <div class="flex justify-center gap-2.5 my-4">
+                        <button onclick="pressDigit(2, '۳')" class="w-11 h-11 bg-white border-2 border-slate-200 hover:border-orange-500 hover:scale-105 active:scale-95 font-bold text-sm rounded-xl shadow-sm transition-all duration-150">۳</button>
+                        <button onclick="pressDigit(2, '۴')" class="w-11 h-11 bg-white border-2 border-slate-200 hover:border-orange-500 hover:scale-105 active:scale-95 font-bold text-sm rounded-xl shadow-sm transition-all duration-150">۴</button>
+                        <button onclick="pressDigit(2, '۵')" class="w-11 h-11 bg-white border-2 border-slate-200 hover:border-orange-500 hover:scale-105 active:scale-95 font-bold text-sm rounded-xl shadow-sm transition-all duration-150">۵</button>
+                    </div>
+
+                    <div class="flex flex-col items-center gap-3">
+                        <div class="flex gap-2 justify-center" dir="ltr" id="slots-container-p2"></div>
+                        <div class="flex gap-2">
+                            <button onclick="clearState(2)" class="text-[10px] text-slate-500 hover:text-slate-700 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg transition font-medium">پاک کردن</button>
+                            <button onclick="registerNumber(2, 3)" class="text-[10px] text-orange-700 bg-orange-100 hover:bg-orange-200 px-3 py-1.5 rounded-lg font-bold transition">ثبت عدد ساخته شده</button>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-t border-slate-200/50">
+                        <span class="text-[10px] font-bold text-slate-400 block mb-1">عددهای سه رقمی ثبت شده (هدف: ۲۷ عدد متمایز):</span>
+                        <div id="found-numbers-p2" class="flex flex-wrap gap-1.5 text-[10px]">
+                            <span class="text-slate-400 italic">هنوز عددی نساخته‌ای...</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50/80 p-4 rounded-xl border border-slate-200/60">
+                    <h3 class="text-[11px] font-bold text-slate-700 mb-2 flex items-center gap-1.5">
+                        <span class="w-1.5 h-1.5 bg-slate-500 rounded-full"></span>
+                        کشف کن
+                    </h3>
+                    <ul class="list-disc list-inside text-[11px] text-slate-600 space-y-2 pr-1">
+                        <li>چرا تو این فعالیت، تعداد عددهایی که می‌شه ساخت خیلی بیشتر از فعالیت قبلیه؟</li>
+                        <li>وقتی رقم صدگان رو انتخاب کردی، برای دهگان و یکان چندتا گزینه برات باقی موند؟</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 3: Non-repeated Digits (3-digit with 4 cards) -->
+        <div id="page-3" class="page-content hidden">
+            <div class="flex items-center gap-2 mb-4">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-sm shadow-emerald-300"></span>
+                <h2 class="text-sm font-bold text-slate-800">۳. تکرار ممنوع! (۳ رقمی با ۴ کارت)</h2>
+            </div>
+            
+            <div class="space-y-4">
+                <div class="bg-emerald-50/40 p-4 rounded-xl border border-emerald-100">
+                    <h3 class="text-[11px] font-bold text-emerald-800 mb-1.5 flex items-center gap-1.5">
+                        <span class="w-1.5 h-1.5 bg-emerald-600 rounded-full"></span>
+                        فعالیت
+                    </h3>
+                    <p class="text-xs text-slate-600 leading-relaxed">
+                        حالا چهارتا کارت داریم: <span class="font-bold text-slate-800 bg-white px-1.5 py-0.5 rounded border">۳</span>، <span class="font-bold text-slate-800 bg-white px-1.5 py-0.5 rounded border">۴</span>، <span class="font-bold text-slate-800 bg-white px-1.5 py-0.5 rounded border">۵</span> و <span class="font-bold text-slate-800 bg-white px-1.5 py-0.5 rounded border">۶</span>. می‌خوایم عددهای سه رقمی بسازیم ولی حواست باشه تکرار رقم‌ها ممنوعه. یعنی از هر کارت فقط یک‌بار می‌تونی استفاده کنی.
+                    </p>
+
+                    <div class="flex justify-center gap-2.5 my-4">
+                        <button onclick="pressDigit(3, '۳')" id="btn-p3-3" class="w-11 h-11 bg-white border-2 border-slate-200 hover:border-emerald-500 hover:scale-105 active:scale-95 font-bold text-sm rounded-xl shadow-sm transition-all duration-150">۳</button>
+                        <button onclick="pressDigit(3, '۴')" id="btn-p3-4" class="w-11 h-11 bg-white border-2 border-slate-200 hover:border-emerald-500 hover:scale-105 active:scale-95 font-bold text-sm rounded-xl shadow-sm transition-all duration-150">۴</button>
+                        <button onclick="pressDigit(3, '۵')" id="btn-p3-5" class="w-11 h-11 bg-white border-2 border-slate-200 hover:border-emerald-500 hover:scale-105 active:scale-95 font-bold text-sm rounded-xl shadow-sm transition-all duration-150">۵</button>
+                        <button onclick="pressDigit(3, '۶')" id="btn-p3-۶" class="w-11 h-11 bg-white border-2 border-slate-200 hover:border-emerald-500 hover:scale-105 active:scale-95 font-bold text-sm rounded-xl shadow-sm transition-all duration-150">۶</button>
+                    </div>
+
+                    <div class="flex flex-col items-center gap-3">
+                        <div class="flex gap-2 justify-center" dir="ltr" id="slots-container-p3"></div>
+                        <div class="flex gap-2">
+                            <button onclick="clearState(3)" class="text-[10px] text-slate-500 hover:text-slate-700 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg transition font-medium">پاک کردن</button>
+                            <button onclick="registerNumber(3, 3, true)" class="text-[10px] text-emerald-700 bg-emerald-100 hover:bg-emerald-200 px-3 py-1.5 rounded-lg font-bold transition">ثبت عدد ساخته شده</button>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-t border-slate-200/50">
+                        <span class="text-[10px] font-bold text-slate-400 block mb-1">عددهای ساخته شده بدون تکرار (هدف: ۲۴ عدد متمایز):</span>
+                        <div id="found-numbers-p3" class="flex flex-wrap gap-1.5 text-[10px]">
+                            <span class="text-slate-400 italic">هنوز عددی نساخته‌ای...</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50/80 p-4 rounded-xl border border-slate-200/60">
+                    <h3 class="text-[11px] font-bold text-slate-700 mb-2 flex items-center gap-1.5">
+                        <span class="w-1.5 h-1.5 bg-slate-500 rounded-full"></span>
+                        کشف کن
+                    </h3>
+                    <ul class="list-disc list-inside text-[11px] text-slate-600 space-y-2 pr-1">
+                        <li>به خاطر قانون «تکرار ممنوع»، وقتی یک رقم رو انتخاب می‌کنی، تعداد گزینه‌هات برای جایگاه بعدی چه تغییری می‌کنه؟</li>
+                        <li>چطور می‌تونی قبل از نوشتن همه عددها، حدس بزنی در کل چندتا عدد می‌شه ساخت؟</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 4: Special Constraints (4-digit) -->
+        <div id="page-4" class="page-content hidden">
+            <div class="flex items-center gap-2 mb-4">
+                <span class="w-2.5 h-2.5 rounded-full bg-indigo-500 shadow-sm shadow-indigo-300"></span>
+                <h2 class="text-sm font-bold text-slate-800">۴. شروط ویژه (۴ رقمی)</h2>
+            </div>
+            
+            <div class="space-y-4">
+                <div class="bg-indigo-50/40 p-4 rounded-xl border border-indigo-100">
+                    <h3 class="text-[11px] font-bold text-indigo-800 mb-1.5 flex items-center gap-1.5">
+                        <span class="w-1.5 h-1.5 bg-indigo-600 rounded-full"></span>
+                        فعالیت
+                    </h3>
+                    <p class="text-xs text-slate-600 leading-relaxed">
+                        با چهار تا کارت <span class="font-bold text-slate-800 bg-white px-1.5 py-0.5 rounded border">۰</span>، <span class="font-bold text-slate-800 bg-white px-1.5 py-0.5 rounded border">۲</span>، <span class="font-bold text-slate-800 bg-white px-1.5 py-0.5 rounded border">۵</span> و <span class="font-bold text-slate-800 bg-white px-1.5 py-0.5 rounded border">۷</span> می‌خوایم عددهای چهار رقمی زوج و بدون تکرار بسازیم. کارت‌ها رو طوری تو خانه‌ها بچین که قوانین خراب نشن!
+                    </p>
+
+                    <div class="flex justify-center gap-2.5 my-4">
+                        <button onclick="pressDigit(4, '۰')" id="btn-p4-۰" class="w-11 h-11 bg-white border-2 border-slate-200 hover:border-indigo-500 hover:scale-105 active:scale-95 font-bold text-sm rounded-xl shadow-sm transition-all duration-150">۰</button>
+                        <button onclick="pressDigit(4, '۲')" id="btn-p4-۲" class="w-11 h-11 bg-white border-2 border-slate-200 hover:border-indigo-500 hover:scale-105 active:scale-95 font-bold text-sm rounded-xl shadow-sm transition-all duration-150">۲</button>
+                        <button onclick="pressDigit(4, '۵')" id="btn-p4-۵" class="w-11 h-11 bg-white border-2 border-slate-200 hover:border-indigo-500 hover:scale-105 active:scale-95 font-bold text-sm rounded-xl shadow-sm transition-all duration-150">۵</button>
+                        <button onclick="pressDigit(4, '۷')" id="btn-p4-۷" class="w-11 h-11 bg-white border-2 border-slate-200 hover:border-indigo-500 hover:scale-105 active:scale-95 font-bold text-sm rounded-xl shadow-sm transition-all duration-150">۷</button>
+                    </div>
+
+                    <div class="flex flex-col items-center gap-3">
+                        <div class="flex gap-2 justify-center" dir="ltr" id="slots-container-p4"></div>
+                        <div class="flex gap-2">
+                            <button onclick="clearState(4)" class="text-[10px] text-slate-500 hover:text-slate-700 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg transition font-medium">پاک کردن</button>
+                            <button onclick="registerNumber(4, 4, true, true)" class="text-[10px] text-indigo-700 bg-indigo-100 hover:bg-indigo-200 px-3 py-1.5 rounded-lg font-bold transition">ثبت عدد ساخته شده</button>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-t border-slate-200/50">
+                        <span class="text-[10px] font-bold text-slate-400 block mb-1">عددهای زوج ۴ رقمی درست (هدف: ۱۰ عدد متمایز):</span>
+                        <div id="found-numbers-p4" class="flex flex-wrap gap-1.5 text-[10px]">
+                            <span class="text-slate-400 italic">هنوز عددی نساخته‌ای...</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50/80 p-4 rounded-xl border border-slate-200/60">
+                    <h3 class="text-[11px] font-bold text-slate-700 mb-2 flex items-center gap-1.5">
+                        <span class="w-1.5 h-1.5 bg-slate-500 rounded-full"></span>
+                        کشف کن
+                    </h3>
+                    <ul class="list-disc list-inside text-[11px] text-slate-600 space-y-2 pr-1">
+                        <li>چرا کارت «۰» نمی‌تونه تو جایگاه هزارگان (سمت چپ‌ترین خانه) قرار بگیره؟</li>
+                        <li>شرط «زوج بودن عدد» چه تاثیری روی کارت‌هایی که می‌تونن تو جایگاه یکان بشینن، می‌ذاره؟</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 5: Compare Situations -->
+        <div id="page-5" class="page-content hidden">
+            <div class="flex items-center gap-2 mb-4">
+                <span class="w-2.5 h-2.5 rounded-full bg-slate-500 shadow-sm shadow-slate-300"></span>
+                <h2 class="text-sm font-bold text-slate-800">۵. مقایسه سه وضعیت مختلف</h2>
+            </div>
+            
+            <div class="space-y-4">
+                <div class="bg-slate-50/60 p-4 rounded-xl border border-slate-200">
+                    <h3 class="text-[11px] font-bold text-slate-800 mb-2 flex items-center gap-1.5">
+                        <span class="w-1.5 h-1.5 bg-slate-600 rounded-full"></span>
+                        فعالیت
+                    </h3>
+                    <p class="text-xs text-slate-600 leading-relaxed">
+                        بیا نتایج چالش‌های قبلی رو با هم مقایسه کنیم و ببینیم چه چیزی تو ریاضی تغییر کرده:
+                    </p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mt-3 text-center font-bold">
+                        <div class="p-3 bg-white rounded-xl border-2 border-slate-100 shadow-sm hover:border-slate-300 transition-all">
+                            <span class="text-[10px] text-blue-600 block mb-1">حالت اول (۳ رقمی)</span>
+                            <span class="text-base text-slate-800 block">۲۷ عدد</span>
+                            <p class="text-[9px] text-slate-400 mt-1 font-normal">تکرار آزاد با ۳ کارت</p>
+                        </div>
+                        <div class="p-3 bg-white rounded-xl border-2 border-slate-100 shadow-sm hover:border-slate-300 transition-all">
+                            <span class="text-[10px] text-emerald-600 block mb-1">حالت دوم (۳ رقمی)</span>
+                            <span class="text-base text-slate-800 block">۲۴ عدد</span>
+                            <p class="text-[9px] text-slate-400 mt-1 font-normal">تکرار ممنوع با ۴ کارت</p>
+                        </div>
+                        <div class="p-3 bg-white rounded-xl border-2 border-slate-100 shadow-sm hover:border-slate-300 transition-all">
+                            <span class="text-[10px] text-indigo-600 block mb-1">حالت سوم (۴ رقمی)</span>
+                            <span class="text-base text-slate-800 block">۱۰ عدد</span>
+                            <p class="text-[9px] text-slate-400 mt-1 font-normal">زوج، تکرار ممنوع، با ۴ کارت</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50/80 p-4 rounded-xl border border-slate-200/60">
+                    <h3 class="text-[11px] font-bold text-slate-700 mb-2 flex items-center gap-1.5">
+                        <span class="w-1.5 h-1.5 bg-slate-500 rounded-full"></span>
+                        کشف کن
+                    </h3>
+                    <ul class="list-disc list-inside text-[11px] text-slate-600 space-y-2 pr-1">
+                        <li>چرا وقتی شرط‌های جدیدی (مثل زوج بودن یا تکرار ممنوع) به مسئله اضافه می‌شن، تعداد کل عددهای ممکن اینقدر کمتر می‌شه؟</li>
+                        <li>به نظر تو، چطوری می‌تونیم بدون نوشتن همه عددها، تنها با یک ضرب ساده بفهمیم چندتا عدد می‌شه ساخت؟</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 6: Textbook Practice (Multiple Choice) -->
+        <div id="page-6" class="page-content hidden">
+            <div class="flex items-center gap-2 mb-4">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-sm shadow-emerald-300"></span>
+                <h2 class="text-sm font-bold text-slate-800">۶. تمرین‌های کتاب درسی (تستی)</h2>
+            </div>
+            
+            <div class="space-y-4">
+                <!-- Q1 -->
+                <div class="bg-emerald-50/10 p-4 rounded-xl border border-emerald-100/50">
+                    <span class="text-[10px] font-bold text-emerald-600 block mb-1">سؤال اول (بدون تکرار):</span>
+                    <p class="text-xs text-slate-700 leading-relaxed mb-3">
+                        با کارت‌های رقم <span class="font-bold px-1 bg-white rounded border">۵</span>، <span class="font-bold px-1 bg-white rounded border">۰</span>، <span class="font-bold px-1 bg-white rounded border">۲</span> و <span class="font-bold px-1 bg-white rounded border">۹</span>، بزرگ‌ترین و کوچک‌ترین عددهای ۴ رقمی <span class="font-bold">بدون تکرار</span> کدام گزینه‌ها هستند؟
+                    </p>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <!-- Correct -->
+                        <button onclick="checkTestAnswer(6, 1, 0, true, 'آفرین به تو! بزرگ‌ترین عدد ۹۵۲۰ هست. برای کوچک‌ترین عدد هم چون صفر نمی‌تونه اولِ چپ باشه، از ۲ شروع می‌کنیم و صفر رو می‌ذاریم بعدش تا عدد ۲۰۵۹ ساخته بشه.')" id="btn-6-1-0" class="test-btn text-right text-xs p-3 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 active:scale-95 transition-all">
+                            الف) ۹۵۲۰ و ۲۰۵۹
+                        </button>
+                        <!-- Very Close Distractor -->
+                        <button onclick="checkTestAnswer(6, 1, 1, false, 'خیلی نزدیک شدی! اما در عدد دوم رقم‌های دهگان و یکان جابجا شدن. دقت کن که برای ساختن کوچک‌ترین عدد باید رقم کوچک‌تر در مرتبه دهگان قرار بگیره.')" id="btn-6-1-1" class="test-btn text-right text-xs p-3 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 active:scale-95 transition-all">
+                            ب) ۹۵۲۰ و ۲۰۹۵
+                        </button>
+                        <!-- Far Distractor -->
+                        <button onclick="checkTestAnswer(6, 1, 2, false, 'دقت کن! در عدد دوم از رقم تکراری صفر استفاده شده، در حالی که صورت سوال گفته بدون تکرار رقم‌ها!')" id="btn-6-1-2" class="test-btn text-right text-xs p-3 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 active:scale-95 transition-all">
+                            ج) ۹۵۰۲ و ۲۰۰۹
+                        </button>
+                        <!-- Far Distractor -->
+                        <button onclick="checkTestAnswer(6, 1, 3, false, 'اشتباه است. چیدمان کلی رقم‌ها در هر دو عدد نادرست است و اصلاً بزرگ‌ترین و کوچک‌ترین اعداد ممکن ساخته نشده‌اند.')" id="btn-6-1-3" class="test-btn text-right text-xs p-3 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 active:scale-95 transition-all">
+                            د) ۵۹۲۰ و ۹۰۲۵
+                        </button>
+                    </div>
+                    <div id="feedback-6-1" class="hidden mt-3 text-[11px] p-3 rounded-xl border transition-all duration-300"></div>
+                </div>
+
+                <!-- Q2 -->
+                <div class="bg-emerald-50/10 p-4 rounded-xl border border-emerald-100/50">
+                    <span class="text-[10px] font-bold text-emerald-600 block mb-1">سؤال دوم (با تکرار مجاز):</span>
+                    <p class="text-xs text-slate-700 leading-relaxed mb-3">
+                        با رقم‌های <span class="font-bold px-1 bg-white rounded border">۳</span>، <span class="font-bold px-1 bg-white rounded border">۷</span> و <span class="font-bold px-1 bg-white rounded border">۸</span>، کوچک‌ترین عدد سه رقمی که می‌توان ساخت چیست؟ (با فرض اینکه <span class="font-bold">تکرار رقم‌ها مجاز</span> باشد)
+                    </p>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <!-- Correct -->
+                        <button onclick="checkTestAnswer(6, 2, 0, true, 'درسته! چون تکرار رقم‌ها مجازه، برای کوچک‌ترین عدد ممکن، کوچک‌ترین رقم یعنی ۳ رو در هر سه جایگاه صدگان، دهگان و یکان قرار می‌دیم.')" id="btn-6-2-0" class="test-btn text-right text-xs p-3 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 active:scale-95 transition-all">
+                            الف) ۳۳۳
+                        </button>
+                        <!-- Very Close Distractor -->
+                        <button onclick="checkTestAnswer(6, 2, 1, false, 'خیلی نزدیک شدی! اما چون تکرار مجازه، می‌تونی باز هم عدد کوچک‌تری بسازی. فکر کن چه رقمی رو می‌شه دوباره تکرار کرد؟')" id="btn-6-2-1" class="test-btn text-right text-xs p-3 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 active:scale-95 transition-all">
+                            ب) ۳۳۷
+                        </button>
+                        <!-- Far Distractor -->
+                        <button onclick="checkTestAnswer(6, 2, 2, false, 'این کوچک‌ترین عدد بدون تکرار رقم‌ها است. اما سوال به ما اجازه داده که ارقام را تکرار کنیم تا عدد حتی کوچک‌تر شود!')" id="btn-6-2-2" class="test-btn text-right text-xs p-3 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 active:scale-95 transition-all">
+                            ج) ۳۷۸
+                        </button>
+                        <!-- Far Distractor -->
+                        <button onclick="checkTestAnswer(6, 2, 3, false, 'این بزرگ‌ترین عددی است که با تکرار ارقام می‌توان ساخت، اما سوال از ما کوچک‌ترین عدد را خواسته!')" id="btn-6-2-3" class="test-btn text-right text-xs p-3 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 active:scale-95 transition-all">
+                            د) ۸۸۸
+                        </button>
+                    </div>
+                    <div id="feedback-6-2" class="hidden mt-3 text-[11px] p-3 rounded-xl border transition-all duration-300"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 7: Intermediate Practice -->
+        <div id="page-7" class="page-content hidden">
+            <div class="flex items-center gap-2 mb-4">
+                <span class="w-2.5 h-2.5 rounded-full bg-blue-600 shadow-sm shadow-blue-300"></span>
+                <h2 class="text-sm font-bold text-slate-800">۷. تمرین‌های سطح متوسط (تستی)</h2>
+            </div>
+            
+            <div class="space-y-4">
+                <!-- Q1 -->
+                <div class="bg-blue-50/10 p-4 rounded-xl border border-blue-100/50">
+                    <span class="text-[10px] font-bold text-blue-600 block mb-1">سؤال اول (بزرگتر از ۵۰۰):</span>
+                    <p class="text-xs text-slate-700 leading-relaxed mb-3">
+                        می‌خواهیم با رقم‌های <span class="font-bold px-1 bg-white rounded border">۱</span>، <span class="font-bold px-1 bg-white rounded border">۳</span>، <span class="font-bold px-1 bg-white rounded border">۵</span> و <span class="font-bold px-1 bg-white rounded border">۷</span>، بزرگ‌ترین عدد ۳ رقمی فرد و <span class="font-bold">بدون تکرار</span> را بسازیم که از ۵۰۰ بزرگ‌تر باشد. این عدد کدام است؟
+                    </p>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <!-- Correct -->
+                        <button onclick="checkTestAnswer(7, 1, 0, true, 'آفرین به هوشت! بزرگ‌ترین صدگان ممکن ۷ هست. چون عدد بدون تکراره، رقم‌های بعدی رو به ترتیب نزولی می‌نویسیم یعنی ۵ و بعد ۳. از طرفی چون یکانش ۳ هست، فرد هم هست و از ۵۰۰ هم بزرگ‌تره.')" id="btn-7-1-0" class="test-btn text-right text-xs p-3 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 active:scale-95 transition-all">
+                            الف) ۷۵۳
+                        </button>
+                        <!-- Very Close Distractor -->
+                        <button onclick="checkTestAnswer(7, 1, 1, false, 'بسیار نزدیک بود! اما برای اینکه عدد بزرگ‌تر شود، رقم دهگان باید بزرگ‌تر از رقم یکان قرار بگیرد. جایگاه ۳ و ۵ را بررسی کن!')" id="btn-7-1-1" class="test-btn text-right text-xs p-3 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 active:scale-95 transition-all">
+                            ب) ۷۳۵
+                        </button>
+                        <!-- Far Distractor -->
+                        <button onclick="checkTestAnswer(7, 1, 2, false, 'دقت کن! این عدد تمام شرط‌ها را دارد، اما بزرگ‌ترین عدد ممکن نیست چون در مرتبه صدگان می‌توان از رقم بزرگ‌تری استفاده کرد.')" id="btn-7-1-2" class="test-btn text-right text-xs p-3 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 active:scale-95 transition-all">
+                            ج) ۵۷۳
+                        </button>
+                        <!-- Far Distractor -->
+                        <button onclick="checkTestAnswer(7, 1, 3, false, 'این عدد اصلاً از ۵۰۰ بزرگ‌تر نیست! صورت سوال تأکید کرده که عدد باید از ۵۰۰ بزرگ‌تر باشد.')" id="btn-7-1-3" class="test-btn text-right text-xs p-3 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 active:scale-95 transition-all">
+                            د) ۱۳۵
+                        </button>
+                    </div>
+                    <div id="feedback-7-1" class="hidden mt-3 text-[11px] p-3 rounded-xl border transition-all duration-300"></div>
+                </div>
+
+                <!-- Q2 -->
+                <div class="bg-blue-50/10 p-4 rounded-xl border border-blue-100/50">
+                    <span class="text-[10px] font-bold text-blue-600 block mb-1">سؤال دوم (شرط مقایسه‌ای مرتبه‌ها):</span>
+                    <p class="text-xs text-slate-700 leading-relaxed mb-3">
+                        با رقم‌های <span class="font-bold px-1 bg-white rounded border">۲</span>، <span class="font-bold px-1 bg-white rounded border">۴</span>، <span class="font-bold px-1 bg-white rounded border">۶</span> و <span class="font-bold px-1 bg-white rounded border">۹</span>، کوچک‌ترین عدد ۴ رقمی بدون تکرار را بسازید به طوری که رقم دهگان آن از رقم یکانش بزرگ‌تر باشد.
+                    </p>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <!-- Correct -->
+                        <button onclick="checkTestAnswer(7, 2, 0, true, 'آفرین! صدگان و هزارگان رو کوچک‌ترین رقم‌ها یعنی ۲ و ۴ گذاشتیم. برای دو رقم آخر، ۹ رو تو دهگان و ۶ رو تو یکان قرار دادیم تا هم دهگان بزرگ‌تر از یکان باشه و هم عدد ما کوچک‌ترین حالت ممکن بشه.')" id="btn-7-2-0" class="test-btn text-right text-xs p-3 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 active:scale-95 transition-all">
+                            الف) ۲۴۹۶
+                        </button>
+                        <!-- Very Close Distractor -->
+                        <button onclick="checkTestAnswer(7, 2, 1, false, 'بسیار نزدیک شدی! اما در این گزینه رقم دهگان (۶) از یکان (۹) کوچک‌تر است؛ در حالی که شرط اصلی این بود که دهگان از یکان بزرگ‌تر باشد.')" id="btn-7-2-1" class="test-btn text-right text-xs p-3 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 active:scale-95 transition-all">
+                            ب) ۲۴۶۹
+                        </button>
+                        <!-- Far Distractor -->
+                        <button onclick="checkTestAnswer(7, 2, 2, false, 'این عدد شرط دهگان بزرگ‌تر از یکان را دارد، اما کوچک‌ترین عدد ممکن نیست. به مرتبه صدگان دقت کن که می‌توانست کوچک‌تر باشد.')" id="btn-7-2-2" class="test-btn text-right text-xs p-3 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 active:scale-95 transition-all">
+                            ج) ۲۶۹۴
+                        </button>
+                        <!-- Far Distractor -->
+                        <button onclick="checkTestAnswer(7, 2, 3, false, 'این گزینه بزرگ‌ترین عدد ممکن با این شرایط است، در حالی که ما به دنبال کوچک‌ترین عدد ممکن بودیم.')" id="btn-7-2-3" class="test-btn text-right text-xs p-3 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 active:scale-95 transition-all">
+                            د) ۹۶۴۲
+                        </button>
+                    </div>
+                    <div id="feedback-7-2" class="hidden mt-3 text-[11px] p-3 rounded-xl border transition-all duration-300"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 8: Challenge Practice -->
+        <div id="page-8" class="page-content hidden">
+            <div class="flex items-center gap-2 mb-4">
+                <span class="w-2.5 h-2.5 rounded-full bg-orange-600 shadow-sm shadow-orange-300"></span>
+                <h2 class="text-sm font-bold text-slate-800">۸. تمرین‌های چالشی و تفکری (تستی)</h2>
+            </div>
+            
+            <div class="space-y-4">
+                <!-- Q1 -->
+                <div class="bg-orange-50/10 p-4 rounded-xl border border-orange-100/50">
+                    <span class="text-[10px] font-bold text-orange-600 block mb-1">چالش اول (بزرگ‌ترین زوج با شرط ثابت):</span>
+                    <p class="text-xs text-slate-700 leading-relaxed mb-3">
+                        با رقم‌های <span class="font-bold px-1 bg-white rounded border">۰</span>، <span class="font-bold px-1 bg-white rounded border">۲</span>، <span class="font-bold px-1 bg-white rounded border">۴</span>، <span class="font-bold px-1 bg-white rounded border">۵</span> و <span class="font-bold px-1 bg-white rounded border">۷</span>، بزرگ‌ترین عدد ۴ رقمی <span class="font-bold">زوج و بدون تکرار</span> را بسازید به طوری که رقم صدگان آن حتماً <span class="font-bold">۵</span> باشد.
+                    </p>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <!-- Correct -->
+                        <button onclick="checkTestAnswer(8, 1, 0, true, 'شگفت‌انگیزه! شما یک کارآگاه ریاضی واقعی هستید. برای بزرگ‌ترین شدن، هزارگان رو ۷ گذاشتیم. صدگان باید ۵ باشه. برای دهگان رقم ۴ (بزرگ‌ترین زوج باقی‌مانده) و برای یکان رقم ۲ رو انتخاب کردیم تا کل عدد زوج و بزرگ‌ترین بشه.')" id="btn-8-1-0" class="test-btn text-right text-xs p-3 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 active:scale-95 transition-all">
+                            الف) ۷۵۴۲
+                        </button>
+                        <!-- Very Close Distractor -->
+                        <button onclick="checkTestAnswer(8, 1, 1, false, 'فوق‌العاده نزدیک بود! اما چون یکان این عدد صفر شده، ارزش کلی آن از عدد ۷۵۴۲ کمی کوچک‌تر است. ما بزرگ‌ترین عدد ممکن را می‌خواهیم.')" id="btn-8-1-1" class="test-btn text-right text-xs p-3 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 active:scale-95 transition-all">
+                            ب) ۷۵۴۰
+                        </button>
+                        <!-- Far Distractor -->
+                        <button onclick="checkTestAnswer(8, 1, 2, false, 'دقت کن! با انتخاب رقم صفر در دهگان، عدد بسیار کوچک‌تر از حد انتظار شده است. دهگان می‌توانست بزرگ‌تر باشد.')" id="btn-8-1-2" class="test-btn text-right text-xs p-3 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 active:scale-95 transition-all">
+                            ج) ۷۵۰۴
+                        </button>
+                        <!-- Far Distractor -->
+                        <button onclick="checkTestAnswer(8, 1, 3, false, 'اشتباه است. این عدد بسیار کوچک است چون با رقم ۲ در جایگاه هزارگان شروع شده، در حالی که کارت ۷ را در اختیار داشتیم.')" id="btn-8-1-3" class="test-btn text-right text-xs p-3 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 active:scale-95 transition-all">
+                            د) ۲۵۷۴
+                        </button>
+                    </div>
+                    <div id="feedback-8-1" class="hidden mt-3 text-[11px] p-3 rounded-xl border transition-all duration-300"></div>
+                </div>
+
+                <!-- Q2 -->
+                <div class="bg-orange-50/10 p-4 rounded-xl border border-orange-100/50">
+                    <span class="text-[10px] font-bold text-orange-600 block mb-1">چالش دوم (کوچک‌ترین با چند شرط همزمان):</span>
+                    <p class="text-xs text-slate-700 leading-relaxed mb-3">
+                        کوچک‌ترین عدد ۴ رقمی بدون تکرار را بسازید که رقم صدگان آن زوج باشد و رقم یکان آن از رقم دهگانش بزرگ‌تر باشد. (رقم‌ها را فقط از بین <span class="font-bold">{۱، ۲، ۳، ۵، ۸}</span> انتخاب کنید).
+                    </p>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <!-- Correct -->
+                        <button onclick="checkTestAnswer(8, 2, 0, true, 'شاهکاره! برای کوچک‌ترین بودن، هزارگان رو ۱ می‌ذاریم. صدگان باید زوج باشه که بین ارقام ما فقط ۲ و ۸ زوج هستن؛ پس برای کوچک‌تر شدن عدد، ۲ رو برمی‌داریم. در نهایت برای دهگان و یکان، رقم‌های ۳ و ۵ رو طوری می‌چینیم که یکان از دهگان بزرگ‌تر باشه (۵ > ۳).')" id="btn-8-2-0" class="test-btn text-right text-xs p-3 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 active:scale-95 transition-all">
+                            الف) ۱۲۳۵
+                        </button>
+                        <!-- Very Close Distractor -->
+                        <button onclick="checkTestAnswer(8, 2, 1, false, 'بسیار تحلیل زیبایی بود اما در این حالت رقم یکان (۳) از دهگان (۵) کوچک‌تر شده است، در حالی که شرط سوال عکس این بود.')" id="btn-8-2-1" class="test-btn text-right text-xs p-3 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 active:scale-95 transition-all">
+                            ب) ۱۲۵۳
+                        </button>
+                        <!-- Far Distractor -->
+                        <button onclick="checkTestAnswer(8, 2, 2, false, 'دقت کن! اگرچه این عدد شروط را دارد، اما به دلیل استفاده از ۸ در صدگان به جای ۲، عدد بسیار بزرگ‌تری ساخته شده است.')" id="btn-8-2-2" class="test-btn text-right text-xs p-3 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 active:scale-95 transition-all">
+                            ج) ۱۸۳۵
+                        </button>
+                        <!-- Far Distractor -->
+                        <button onclick="checkTestAnswer(8, 2, 3, false, 'این بزرگ‌ترین عدد ممکن با این شرایط است! سوال از شما کوچک‌ترین عدد را خواسته بود.')" id="btn-8-2-3" class="test-btn text-right text-xs p-3 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 active:scale-95 transition-all">
+                            د) ۸۵۳۱
+                        </button>
+                    </div>
+                    <div id="feedback-8-2" class="hidden mt-3 text-[11px] p-3 rounded-xl border transition-all duration-300"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Feedback alerting box for general alerts (pages 1-5) -->
+        <div id="feedback-alert" class="hidden w-full text-[11.5px] p-3.5 rounded-xl border mt-3 transition-all duration-300 leading-relaxed"></div>
+
+        <!-- Footer Control Bar inside the card -->
+        <div class="mt-6 pt-4 border-t border-slate-100 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <button id="main-ans-btn" onclick="toggleAnswer()" class="text-xs font-bold text-emerald-700 hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-4 py-2 rounded-xl transition">
+                پاسخ
+            </button>
+            
+            <div class="flex items-center gap-3">
+                <button id="prev-btn" onclick="slidePage(-1)" class="text-xs font-bold text-slate-500 hover:text-slate-800 bg-slate-100 px-3 py-1.5 rounded-lg transition disabled:opacity-30 disabled:cursor-not-allowed">
+                    صفحه قبل
+                </button>
+                <span class="text-xs text-slate-400 font-bold" id="page-indicator"></span>
+                <button id="next-btn" onclick="slidePage(1)" class="text-xs font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg transition">
+                    صفحه بعد
+                </button>
+            </div>
+        </div>
+
+    </div>
+</main>
+
+<!-- Footer outside the card -->
+<footer class="w-full max-w-2xl mx-auto mt-6 text-center text-[10px] text-slate-400 border-t border-slate-200/50 pt-3">
+    کتابچه کار اندیشه ریاضی پایه ششم • تمرکز بر تفکر، استدلال و کشف الگوها
+</footer>
+
+<script>
+    let currentPage = 1;
+    const totalPages = 8;
+    
+    // Core game state database for pages 1 to 4
+    const trackingState = {
+        p1: { input: [], registered: new Set() },
+        p2: { input: [], registered: new Set() },
+        p3: { input: [], registered: new Set() },
+        p4: { input: [], registered: new Set() }
+    };
+
+    const faDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+    
+    // Convert numbers to Persian characters
+    function toFa(inputNum) {
+        if (inputNum === null || inputNum === undefined) return '';
+        return inputNum.toString().replace(/[0-9]/g, match => faDigits[+match]);
+    }
+
+    // Build standard high-quality pagination navigation tabs
+    function buildBinderPagination() {
+        const binder = document.getElementById('pagination-binder');
+        binder.innerHTML = '';
+        for (let idx = 1; idx <= totalPages; idx++) {
+            binder.innerHTML += `
+                <button onclick="goToPage(${idx})" id="page-tab-${idx}" class="w-7 h-7 rounded-lg text-[11px] font-bold flex items-center justify-center transition-all border ${idx === 1 ? 'bg-slate-800 text-white border-slate-800 shadow-sm' : 'bg-slate-50 text-slate-500 border-slate-200 hover:bg-slate-200'}">
+                    ${toFa(idx)}
+                </button>
+            `;
+        }
+        goToPage(1);
+    }
+
+    // Standard Slide Switcher
+    function goToPage(targetPage) {
+        if (targetPage < 1 || targetPage > totalPages) return;
+        
+        // Hide all screens
+        for (let i = 1; i <= totalPages; i++) {
+            const container = document.getElementById(`page-${i}`);
+            if (container) container.classList.add('hidden');
+            
+            const tabButton = document.getElementById(`page-tab-${i}`);
+            if (tabButton) {
+                tabButton.className = `w-7 h-7 rounded-lg text-[11px] font-bold flex items-center justify-center transition-all border ${i === targetPage ? 'bg-slate-800 text-white border-slate-800 shadow-sm' : 'bg-slate-50 text-slate-500 border-slate-200 hover:bg-slate-200'}`;
+            }
+        }
+
+        const currentContainer = document.getElementById(`page-${targetPage}`);
+        if (currentContainer) currentContainer.classList.remove('hidden');
+
+        currentPage = targetPage;
+        document.getElementById('page-indicator').textContent = `صفحه ${toFa(currentPage)} از ${toFa(totalPages)}`;
+
+        // Set state for action buttons
+        document.getElementById('prev-btn').disabled = (currentPage === 1);
+        document.getElementById('next-btn').disabled = (currentPage === totalPages);
+
+        // Reset any temporary state warnings
+        const alertBox = document.getElementById('feedback-alert');
+        alertBox.classList.add('hidden');
+
+        // Toggle the explanation reveal button appropriately
+        const mainAnsBtn = document.getElementById('main-ans-btn');
+        if (currentPage >= 6) {
+            mainAnsBtn.classList.add('hidden');
+        } else {
+            mainAnsBtn.classList.remove('hidden');
+        }
+
+        // Draw interactive card slots dynamically
+        if (currentPage <= 4) {
+            const slotsCount = (currentPage === 4) ? 4 : 3; 
+            drawInteractiveSlots(currentPage, slotsCount);
+        }
+    }
+
+    function slidePage(direction) {
+        goToPage(currentPage + direction);
+    }
+
+    // DRAW SLOTS IN MATHEMATICALLY CORRECT LEFT-TO-RIGHT FORMAT
+    function drawInteractiveSlots(pageNum, count) {
+        const slotsDiv = document.getElementById(`slots-container-p${pageNum}`);
+        if (!slotsDiv) return;
+        
+        slotsDiv.innerHTML = '';
+        
+        // standard Math order labels (LTR visually representation inside LTR block)
+        const labelMaps = count === 4 ? ["هزارگان", "صدگان", "دهگان", "یکان"] : ["صدگان", "دهگان", "یکان"];
+        const stateObj = trackingState[`p${pageNum}`];
+
+        for (let k = 0; k < count; k++) {
+            const activeDigit = stateObj.input[k] || '';
+            slotsDiv.innerHTML += `
+                <div class="w-12 h-14 border-2 ${activeDigit ? 'border-orange-400 bg-orange-50/30 text-orange-700 font-extrabold' : 'border-dashed border-slate-300 text-slate-300'} rounded-xl flex flex-col items-center justify-center shadow-inner transition-all duration-150">
+                    <span class="text-[8px] text-slate-400 font-bold leading-none mb-1">${labelMaps[k]}</span>
+                    <span class="text-sm font-bold">${toFa(activeDigit)}</span>
+                </div>
+            `;
+        }
+    }
+
+    function pressDigit(pageNum, value) {
+        const state = trackingState[`p${pageNum}`];
+        if (!state) return;
+
+        const maxSlots = (pageNum === 4) ? 4 : 3;
+        const noRepetitionRules = (pageNum === 3 || pageNum === 4);
+
+        if (noRepetitionRules && state.input.includes(value)) {
+            informUser("تکرار رقم‌ها تو این فعالیت مجاز نیست!", "warning");
+            return;
+        }
+
+        if (state.input.length < maxSlots) {
+            state.input.push(value);
+            drawInteractiveSlots(pageNum, maxSlots);
+            
+            // disable the card visually if no repetition is allowed
+            if (noRepetitionRules) {
+                const btn = document.getElementById(`btn-p${pageNum}-${value}`);
+                if (btn) btn.classList.add('opacity-40', 'cursor-not-allowed', 'pointer-events-none');
+            }
+        }
+    }
+
+    function clearState(pageNum) {
+        const state = trackingState[`p${pageNum}`];
+        if (!state) return;
+        
+        state.input = [];
+        const maxSlots = (pageNum === 4) ? 4 : 3;
+        drawInteractiveSlots(pageNum, maxSlots);
+
+        // restore clickable cards
+        const availableDigits = pageNum === 4 ? ['۰', '۲', '۵', '۷'] : (pageNum === 3 ? ['۳', '۴', '۵', '۶'] : ['۳', '۴', '۵']);
+        availableDigits.forEach(d => {
+            const btn = document.getElementById(`btn-p${pageNum}-${d}`);
+            if (btn) btn.classList.remove('opacity-40', 'cursor-not-allowed', 'pointer-events-none');
+        });
+    }
+
+    function registerNumber(pageNum, targetSlots, blockRepeats = false, hasZeroAndEvenConstraints = false) {
+        const state = trackingState[`p${pageNum}`];
+        if (!state) return;
+
+        if (state.input.length < targetSlots) {
+            informUser("باید تمام خانه‌های خالی رو با رقم‌ها پر کنی!", "warning");
+            return;
+        }
+
+        const generatedNumber = state.input.join('');
+
+        if (hasZeroAndEvenConstraints) {
+            // Thousands position cannot be zero
+            if (state.input[0] === '۰') {
+                informUser("رقم صفر تو سمت چپ‌ترین جایگاه (هزارگان) معنی نداره، چون عدد دیگه چهار رقمی نخواهد بود.", "error");
+                clearState(pageNum);
+                return;
+            }
+            // Must end with a زوج (even) number
+            const unitDigit = state.input[3];
+            if (unitDigit !== '۰' && unitDigit !== '۲') {
+                informUser("برای اینکه عدد زوج بشه، رقم یکان باید حتماً زوج باشه (یعنی رقم ۰ یا ۲). دوباره تلاش کن!", "error");
+                clearState(pageNum);
+                return;
+            }
+        }
+
+        if (state.registered.has(generatedNumber)) {
+            informUser("این عدد رو قبلاً ساختی! یک ترکیب جدید رو امتحان کن.", "warning");
+            clearState(pageNum);
+            return;
+        }
+
+        state.registered.add(generatedNumber);
+        updateFoundList(pageNum);
+        clearState(pageNum);
+    }
+
+    function updateFoundList(pageNum) {
+        const listDiv = document.getElementById(`found-numbers-p${pageNum}`);
+        const state = trackingState[`p${pageNum}`];
+        listDiv.innerHTML = '';
+
+        if (state.registered.size === 0) {
+            listDiv.innerHTML = `<span class="text-slate-400 italic">هنوز عددی نساخته‌ای...</span>`;
+            return;
+        }
+
+        state.registered.forEach(num => {
+            listDiv.innerHTML += `
+                <span class="bg-slate-100 text-slate-800 border border-slate-200 font-bold px-2 py-1 rounded text-[10px]">${toFa(num)}</span>
+            `;
+        });
+    }
+
+    function informUser(text, type = "info") {
+        const alertBox = document.getElementById('feedback-alert');
+        let themeClasses = "bg-blue-50 border-blue-200 text-blue-800";
+        if (type === "warning") themeClasses = "bg-amber-50 border-amber-200 text-amber-800";
+        if (type === "error") themeClasses = "bg-rose-50 border-rose-200 text-rose-800";
+
+        alertBox.className = `w-full text-[11px] p-3 rounded-xl border mt-3 ${themeClasses}`;
+        alertBox.innerHTML = `⚠️ ${text}`;
+        alertBox.classList.remove('hidden');
+    }
+
+    // Evaluation module for Page 6, 7 and 8 multiple-choice options
+    function checkTestAnswer(page, question, optionIdx, isCorrect, explanationText) {
+        const parentDiv = document.getElementById(`btn-${page}-${question}-${optionIdx}`).parentElement;
+        const siblingButtons = parentDiv.querySelectorAll('.test-btn');
+        
+        // Reset styles for other buttons in the same question
+        siblingButtons.forEach(btn => {
+            btn.className = "test-btn text-right text-xs p-3 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-all";
+        });
+
+        const selectedBtn = document.getElementById(`btn-${page}-${question}-${optionIdx}`);
+        const feedbackDiv = document.getElementById(`feedback-${page}-${question}`);
+
+        if (isCorrect) {
+            selectedBtn.className = "test-btn text-right text-xs p-3 bg-emerald-50 border-2 border-emerald-500 text-emerald-800 font-bold rounded-xl transition-all scale-[1.02]";
+            feedbackDiv.className = "mt-3 text-[11px] p-3 rounded-xl border bg-emerald-50 border-emerald-200 text-emerald-800 leading-relaxed";
+            feedbackDiv.innerHTML = `🎯 <strong>پاسخ شما درست است!</strong><br>${explanationText}`;
+        } else {
+            selectedBtn.className = "test-btn text-right text-xs p-3 bg-rose-50 border-2 border-rose-400 text-rose-800 rounded-xl transition-all scale-[0.98]";
+            feedbackDiv.className = "mt-3 text-[11px] p-3 rounded-xl border bg-rose-50 border-rose-200 text-rose-800 leading-relaxed";
+            feedbackDiv.innerHTML = `❌ <strong>تلاش مجدد:</strong><br>${explanationText}`;
+        }
+        feedbackDiv.classList.remove('hidden');
+    }
+
+    // Interactive feedback explanations database
+    const responseMatrix = {
+        1: "<strong>پاسخ فعالیت بخش چیدمان رقم‌ها:</strong><br>با کارت‌های ۳، ۴ و ۵ بدون تکرار، می‌توان ۶ عدد متمایز ۳ رقمی ساخت:<br><span class='font-bold text-slate-800 math-ltr'>345, 354, 435, 453, 534, 543</span>",
+        2: "<strong>پاسخ فعالیت تکرار مجاز:</strong><br>چون تکرار رقم‌ها آزاد است، برای هر یک از مرتبه‌ها (صدگان، دهگان و یکان) ۳ گزینه در اختیار داریم. در نتیجه کل حالت‌ها برابر است با:<br><span class='font-bold text-slate-800 math-ltr'>3 × 3 × 3 = 27</span> عدد متمایز.",
+        3: "<strong>پاسخ فعالیت تکرار ممنوع:</strong><br>چون ۴ کارت در اختیار داریم و تکرار ممنوع است:<br>- برای صدگان ۴ گزینه، برای دهگان ۳ گزینه و برای یکان ۲ گزینه داریم.<br>کل حالت‌ها برابر است با:<br><span class='font-bold text-slate-800 math-ltr'>4 × 3 × 2 = 24</span> عدد متمایز.",
+        4: "<strong>پاسخ چالش شروط ویژه:</strong><br>در مجموع ۱۰ عدد چهار رقمی زوج متمایز و بدون تکرار می‌توان ساخت:<br>۱. اگر یکان صفر باشد (۶ عدد): <span class='font-bold math-ltr'>2570, 2750, 5270, 5720, 7250, 7520</span><br>۲. اگر یکان دو باشد (۴ عدد): <span class='font-bold math-ltr'>5072, 5702, 7052, 7502</span>",
+        5: "<strong>بررسی عمیق مقایسه وضعیت‌ها:</strong><br>هر چقدر شروط بیشتری (مانند زوج بودن، تکرار ممنوع یا عدم حضور صفر در مرتبه بزرگ‌تر) به فرآیند تولید عدد اضافه شود، گزینه‌های قابل استفاده ما در هر مرتبه کاهش یافته و در نتیجه تعداد کل نتایج متمایز کمتر خواهد شد."
+    };
+
+    function toggleAnswer() {
+        const alertBox = document.getElementById('feedback-alert');
+        const ansHTML = responseMatrix[currentPage];
+        
+        if (ansHTML) {
+            alertBox.className = "w-full text-xs p-4 rounded-xl border mt-3 bg-slate-50 border-slate-200 text-slate-700 leading-relaxed";
+            alertBox.innerHTML = `🎯 <strong>پاسخ معلم:</strong><br><br>${ansHTML}`;
+            alertBox.classList.remove('hidden');
+        }
+    }
+
+    // Start UI
+    window.onload = function() {
+        buildBinderPagination();
+    };
+</script>
+
+</body>
+</html>
